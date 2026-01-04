@@ -324,41 +324,63 @@
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
 
-    /* --- AUTH LOGIC --- */
-    let currentUser = localStorage.getItem('arkibo_user') || null;
+    /* --- AUTH LOGIC (SELF-HEALING) --- */
+    let currentUser = null;
     let userPoints = 0;
 
-    const authScreen = document.getElementById('auth-screen');
-    const menuScreen = document.getElementById('menu');
     const nameInput = document.getElementById('username-input');
     const saveBtn = document.getElementById('save-user');
 
+    // HELPER: Removes characters Firebase hates
+    function cleanFirebasePath(str) {
+        if (!str) return "Player";
+        // Remove . # $ [ ] and ensure it's not a JSON string
+        return str.replace(/[.#$[\]{}:"]/g, "_");
+    }
+
     async function initAuth() {
-        if (!currentUser) {
-            showScreen('auth-screen');
-        } else {
+        let stored = localStorage.getItem('arkibo_user');
+        
+        // SELF-HEALING: If stored data contains JSON braces or emails, it's corrupted. Clear it.
+        if (stored && (stored.includes('{') || stored.includes('@') || stored.includes('"'))) {
+            console.warn("Corrupted storage detected. Resetting session...");
+            localStorage.removeItem('arkibo_user');
+            stored = null;
+        }
+
+        if (stored) {
+            currentUser = cleanFirebasePath(stored);
             loadUserData();
             showScreen('menu');
+        } else {
+            showScreen('auth-screen');
         }
     }
 
     saveBtn.onclick = async () => {
         const val = nameInput.value.trim();
         if (val.length < 3) return alert("Username too short!");
-        currentUser = val;
-        localStorage.setItem('arkibo_user', val);
         
-        // Check if user exists in DB, if not create
+        // Clean the input immediately
+        currentUser = cleanFirebasePath(val);
+        localStorage.setItem('arkibo_user', currentUser);
+        
         const userRef = ref(db, 'users/' + currentUser);
-        const snapshot = await get(userRef);
-        if (!snapshot.exists()) {
-            await set(userRef, { username: currentUser, points: 0 });
+        try {
+            const snapshot = await get(userRef);
+            if (!snapshot.exists()) {
+                await set(userRef, { username: currentUser, points: 0 });
+            }
+            loadUserData();
+            showScreen('menu');
+        } catch (error) {
+            console.error("Firebase Error:", error);
+            alert("Connection error. Please check your internet.");
         }
-        loadUserData();
-        showScreen('menu');
     };
 
     function loadUserData() {
+        if (!currentUser) return;
         document.getElementById('display-name').textContent = currentUser;
         const userRef = ref(db, 'users/' + currentUser);
         onValue(userRef, (snapshot) => {
@@ -371,7 +393,7 @@
     }
 
     async function addPoints(amount) {
-        if (amount <= 0) return;
+        if (amount <= 0 || !currentUser) return;
         const userRef = ref(db, 'users/' + currentUser);
         await update(userRef, {
             points: userPoints + amount
@@ -402,22 +424,19 @@
             const data = snapshot.val();
             const list = [];
             for (let id in data) list.push(data[id]);
-            
-            // Sort by points desc
-            list.sort((a, b) => b.points - a.points);
-            
+            list.sort((a, b) => (b.points || 0) - (a.points || 0));
             const tbody = document.getElementById('lb-body');
             tbody.innerHTML = '';
             list.forEach((user, index) => {
                 const tr = document.createElement('tr');
                 if(user.username === currentUser) tr.className = 'my-row';
-                tr.innerHTML = `<td>${index + 1}</td><td>${user.username}</td><td>${user.points}</td>`;
+                tr.innerHTML = `<td>${index + 1}</td><td>${user.username || 'Anon'}</td><td>${user.points || 0}</td>`;
                 tbody.appendChild(tr);
             });
         });
     }
 
-    /* --- QUIZ LOGIC --- */
+    /* --- QUIZ LOGIC (PRESERVED) --- */
     const quizQuestions = [
       {q:"What is the capital city of Japan?", a:"Tokyo", choices:["Kyoto","Tokyo","Osaka","Hiroshima"]},
       {q:"Who painted the Mona Lisa?", a:"Leonardo da Vinci", choices:["Pablo Picasso","Leonardo da Vinci","Vincent van Gogh","Claude Monet"]},
@@ -564,7 +583,7 @@
             if(tttState[a] && tttState[a] === tttState[b] && tttState[a] === tttState[c]) {
                 tttActive = false;
                 tttStatus.textContent = `Player ${tttState[a]} Wins! (+5 Points)`;
-                if(tttState[a] === "X") await addPoints(5); // Assuming User is always X for points
+                if(tttState[a] === "X") await addPoints(5); 
                 return;
             }
         }
@@ -614,7 +633,7 @@
         await addPoints(bScore);
     }
 
-    // Startup
+    // Initialize the App
     initAuth();
 
   </script>
