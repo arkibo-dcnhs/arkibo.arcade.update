@@ -1,0 +1,622 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Arkibo Arcade</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root{
+      --cream: #fffdf2;
+      --green-1: #2e7d32;
+      --green-2: #81c784;
+      --accent: #cfe9d3;
+      --card: #ffffff;
+    }
+
+    * {box-sizing: border-box;}
+    html,body{height:100%;}
+    body{
+      margin:0;
+      font-family:'Poppins',sans-serif;
+      background: linear-gradient(180deg, #f8fff5 0%, #fffef8 100%);
+      color: var(--green-1);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding:16px;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+      text-transform:uppercase;
+    }
+
+    .app {
+      width:100%;
+      max-width:420px;
+      background: var(--card);
+      border-radius:18px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+      padding:16px;
+      position:relative;
+      min-height: 600px;
+    }
+
+    .logo {
+      display:block;
+      margin:8px auto 6px auto;
+      width:100px;
+      height:100px;
+      object-fit:cover;
+      border-radius:20px;
+      border:6px solid rgba(255,255,255,0.6);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.06);
+    }
+
+    h1, h2 {
+      font-weight:700;
+      letter-spacing:1px;
+      margin:6px 0 12px 0;
+      font-size:18px;
+      text-align:center;
+    }
+
+    .menu-buttons {
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      padding:6px 8px 18px 8px;
+    }
+
+    .btn {
+      border: none;
+      background: linear-gradient(180deg, var(--green-2), #9ccc65);
+      color: #053608;
+      padding:14px;
+      border-radius:12px;
+      font-weight:700;
+      font-size:14px;
+      cursor:pointer;
+      box-shadow: 0 6px 14px rgba(0,0,0,0.06);
+    }
+    .btn.ghost {
+      background: transparent;
+      border:2px solid var(--green-2);
+      color: var(--green-1);
+    }
+
+    /* screens */
+    .screen { display:none; padding:8px; }
+    .screen.active { display:block; }
+
+    .top-row {
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:8px;
+      margin-bottom:8px;
+    }
+
+    .icon-large {
+      width:72px;
+      height:72px;
+      object-fit:cover;
+      border-radius:20px;
+      border:6px solid rgba(255,255,255,0.6);
+    }
+
+    .icon-medium {
+      width:56px;
+      height:56px;
+      object-fit:cover;
+      border-radius:16px;
+    }
+
+    .small { font-size:11px; opacity:0.85; }
+
+    /* Quiz layout */
+    .quiz-card {
+      background: var(--accent);
+      border-radius:12px;
+      padding:12px;
+      margin-bottom:10px;
+    }
+    .question { font-size:13px; margin-bottom:8px; min-height:44px; }
+    .choices { display:flex; flex-direction:column; gap:8px; }
+    .choice-btn {
+      background:white;
+      border-radius:10px;
+      padding:10px;
+      border:1px solid rgba(0,0,0,0.06);
+      font-weight:600;
+      cursor:pointer;
+    }
+    input[type="text"].answer-typed {
+      width:100%;
+      padding:10px;
+      border-radius:10px;
+      border:1px solid rgba(0,0,0,0.08);
+      font-weight:600;
+    }
+
+    .controls { display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
+    .small-btn {
+      padding:8px 10px;
+      border-radius:10px;
+      border:none;
+      background:var(--green-2);
+      color:#053608;
+      font-weight:700;
+      cursor:pointer;
+    }
+
+    /* Tic Tac Toe */
+    .ttt-board {
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap:8px;
+      max-width:300px;
+      margin:8px auto;
+    }
+    .ttt-cell {
+      background: var(--accent);
+      height:80px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:36px;
+      font-weight:800;
+      border-radius:10px;
+      cursor:pointer;
+    }
+
+    /* Leaderboard Table */
+    .lb-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+    .lb-table th {
+      background: var(--green-1);
+      color: white;
+      padding: 8px;
+      text-align: left;
+    }
+    .lb-table td {
+      padding: 8px;
+      border-bottom: 1px solid #eee;
+    }
+    .my-row { background: #fffde7; font-weight: bold; }
+
+    .word-display { font-size:18px; font-weight:800; margin:8px 0; min-height:30px; }
+    .center { text-align:center; }
+  </style>
+</head>
+<body>
+
+  <div class="app" id="app">
+    
+    <div id="auth-screen" class="screen">
+      <img class="logo" src="https://i.imgur.com/gguUeAe.png" alt="Logo" />
+      <h1>IDENTIFY YOURSELF</h1>
+      <p class="center small">Enter a username to track your Star Points.</p>
+      <div class="menu-buttons">
+        <input type="text" id="username-input" class="answer-typed" placeholder="Username..." style="text-align:center">
+        <button class="btn" id="save-user">START ADVENTURE</button>
+      </div>
+    </div>
+
+    <div id="menu" class="screen">
+      <img class="logo" src="https://i.imgur.com/gguUeAe.png" alt="Logo" />
+      <h1>ARKIBO ARCADE</h1>
+      <div class="center small" style="margin-bottom:15px;">
+        PLAYER: <span id="display-name">...</span> | POINTS: <span id="display-points">0</span>
+      </div>
+
+      <div class="menu-buttons">
+        <button class="btn" id="to-quiz">QUIZME</button>
+        <button class="btn" id="to-chess">TIC-TAC-KIBO</button>
+        <button class="btn" id="to-bone">KIBO BONE RUSH</button>
+        <button class="btn ghost" id="to-lb">LEADERBOARD</button>
+      </div>
+      <p class="small center">nlnm dvlp</p>
+    </div>
+
+    <div id="lb-screen" class="screen">
+        <div class="top-row">
+            <h2>LIVE RANKINGS</h2>
+            <button class="small-btn ghost" id="lb-back">BACK</button>
+        </div>
+        <div style="max-height: 400px; overflow-y: auto;">
+            <table class="lb-table">
+                <thead>
+                    <tr>
+                        <th>RANK</th>
+                        <th>USERNAME</th>
+                        <th>STARS</th>
+                    </tr>
+                </thead>
+                <tbody id="lb-body">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div id="quiz-screen" class="screen">
+      <div class="top-row">
+        <img src="https://i.imgur.com/gguUeAe.png" class="icon-medium" />
+        <div style="flex:1;margin-left:8px;">
+          <h2 style="margin:0">QUIZME</h2>
+        </div>
+        <div style="text-align:right;">
+          <div class="small">SCORE</div>
+          <div id="quiz-score" style="font-weight:800">0 / 0</div>
+        </div>
+      </div>
+      <div class="quiz-card">
+        <div class="question" id="quiz-question">Ready?</div>
+        <div style="display:flex;gap:4px;margin-bottom:8px;">
+          <button class="small-btn" id="mode-type">TYPE</button>
+          <button class="small-btn ghost" id="mode-mc">MC</button>
+          <button class="small-btn" id="quiz-start">START</button>
+        </div>
+        <div id="quiz-interaction"></div>
+        <div class="controls">
+          <button class="small-btn" id="quiz-next">NEXT</button>
+          <button class="small-btn ghost" id="quiz-skip">SKIP</button>
+          <button class="small-btn ghost" id="quiz-back">MENU</button>
+        </div>
+        <div class="score-timer">
+          <div class="small">Time: <span id="quiz-timer">05:00</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div id="chess-screen" class="screen">
+      <div class="top-row">
+        <img src="https://i.imgur.com/3npgp4h.png" class="icon-large" />
+        <h2 style="margin:0">TIC-TAC-KIBO</h2>
+        <button class="small-btn" id="chess-home">MENU</button>
+      </div>
+      <div class="ttt-board" id="ttt-board"></div>
+      <div class="center">
+        <div class="small" id="chess-status">Turn: X</div>
+        <button class="small-btn" id="reset-chess" style="margin-top:10px">RESET</button>
+      </div>
+    </div>
+
+    <div id="bone-screen" class="screen">
+      <div class="top-row">
+        <img src="https://i.imgur.com/V6qQgi1.png" class="icon-large" />
+        <h2 style="margin:0">BONE RUSH</h2>
+        <button class="small-btn" id="bone-home">MENU</button>
+      </div>
+      <div class="quiz-card center">
+        <div class="word-display" id="bone-word">PRESS START</div>
+        <input type="text" id="bone-input" class="answer-typed" placeholder="Type here..." autocomplete="off" />
+        <div style="margin-top:10px;">
+          <button class="small-btn" id="bone-start">START</button>
+        </div>
+        <div class="score-timer" style="margin-top:10px;">
+          <div class="small">Bones: <span id="bone-score">0</span></div>
+          <div class="small">Time: <span id="bone-timer">05:00</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
+    import { getDatabase, ref, set, get, update, onValue } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyDEwADNCb_uNyeFkIgi5g03Pkqv3uXNpoQ",
+        authDomain: "arkibo-arcade.firebaseapp.com",
+        databaseURL: "https://arkibo-arcade-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "arkibo-arcade",
+        storageBucket: "arkibo-arcade.firebasestorage.app",
+        messagingSenderId: "647271681508",
+        appId: "1:647271681508:web:5b51c957aaec76e7668bf1"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    /* --- AUTH LOGIC --- */
+    let currentUser = localStorage.getItem('arkibo_user') || null;
+    let userPoints = 0;
+
+    const authScreen = document.getElementById('auth-screen');
+    const menuScreen = document.getElementById('menu');
+    const nameInput = document.getElementById('username-input');
+    const saveBtn = document.getElementById('save-user');
+
+    async function initAuth() {
+        if (!currentUser) {
+            showScreen('auth-screen');
+        } else {
+            loadUserData();
+            showScreen('menu');
+        }
+    }
+
+    saveBtn.onclick = async () => {
+        const val = nameInput.value.trim();
+        if (val.length < 3) return alert("Username too short!");
+        currentUser = val;
+        localStorage.setItem('arkibo_user', val);
+        
+        // Check if user exists in DB, if not create
+        const userRef = ref(db, 'users/' + currentUser);
+        const snapshot = await get(userRef);
+        if (!snapshot.exists()) {
+            await set(userRef, { username: currentUser, points: 0 });
+        }
+        loadUserData();
+        showScreen('menu');
+    };
+
+    function loadUserData() {
+        document.getElementById('display-name').textContent = currentUser;
+        const userRef = ref(db, 'users/' + currentUser);
+        onValue(userRef, (snapshot) => {
+            const data = snapshot.val();
+            if (data) {
+                userPoints = data.points || 0;
+                document.getElementById('display-points').textContent = userPoints;
+            }
+        });
+    }
+
+    async function addPoints(amount) {
+        if (amount <= 0) return;
+        const userRef = ref(db, 'users/' + currentUser);
+        await update(userRef, {
+            points: userPoints + amount
+        });
+    }
+
+    /* --- NAVIGATION --- */
+    const screens = ['menu', 'quiz-screen', 'chess-screen', 'bone-screen', 'auth-screen', 'lb-screen'];
+    function showScreen(id) {
+        screens.forEach(s => document.getElementById(s).style.display = 'none');
+        document.getElementById(id).style.display = 'block';
+        if(id === 'lb-screen') loadLeaderboard();
+    }
+
+    document.getElementById('to-quiz').onclick = () => showScreen('quiz-screen');
+    document.getElementById('to-chess').onclick = () => showScreen('chess-screen');
+    document.getElementById('to-bone').onclick = () => showScreen('bone-screen');
+    document.getElementById('to-lb').onclick = () => showScreen('lb-screen');
+    document.getElementById('lb-back').onclick = () => showScreen('menu');
+    document.getElementById('quiz-back').onclick = () => showScreen('menu');
+    document.getElementById('chess-home').onclick = () => showScreen('menu');
+    document.getElementById('bone-home').onclick = () => showScreen('menu');
+
+    /* --- LEADERBOARD --- */
+    function loadLeaderboard() {
+        const usersRef = ref(db, 'users');
+        onValue(usersRef, (snapshot) => {
+            const data = snapshot.val();
+            const list = [];
+            for (let id in data) list.push(data[id]);
+            
+            // Sort by points desc
+            list.sort((a, b) => b.points - a.points);
+            
+            const tbody = document.getElementById('lb-body');
+            tbody.innerHTML = '';
+            list.forEach((user, index) => {
+                const tr = document.createElement('tr');
+                if(user.username === currentUser) tr.className = 'my-row';
+                tr.innerHTML = `<td>${index + 1}</td><td>${user.username}</td><td>${user.points}</td>`;
+                tbody.appendChild(tr);
+            });
+        });
+    }
+
+    /* --- QUIZ LOGIC --- */
+    const quizQuestions = [
+      {q:"What is the capital city of Japan?", a:"Tokyo", choices:["Kyoto","Tokyo","Osaka","Hiroshima"]},
+      {q:"Who painted the Mona Lisa?", a:"Leonardo da Vinci", choices:["Pablo Picasso","Leonardo da Vinci","Vincent van Gogh","Claude Monet"]},
+      {q:"What is the chemical symbol for water?", a:"H2O", choices:["CO2","H2O","O2","NaCl"]},
+      {q:"What is 12 × 12?", a:"144", choices:["144","124","132","154"]},
+      {q:"Which organ pumps blood through the body?", a:"Heart", choices:["Liver","Lung","Heart","Kidney"]},
+      {q:"What language is primarily spoken in Brazil?", a:"Portuguese", choices:["Spanish","Portuguese","French","English"]},
+      {q:"What gas do humans breathe out?", a:"Carbon dioxide", choices:["Oxygen","Nitrogen","Carbon dioxide","Helium"]},
+      {q:"What is the largest planet in our solar system?", a:"Jupiter", choices:["Mars","Earth","Saturn","Jupiter"]},
+      {q:"If x + 7 = 12, what is x?", a:"5", choices:["4","5","6","7"]},
+      {q:"What is the opposite of 'ancient'?", a:"Modern", choices:["Old","Recent","Modern","Historic"]},
+      {q:"Who wrote '1984'?", a:"George Orwell", choices:["Aldous Huxley","George Orwell","Ray Bradbury","J. K. Rowling"]},
+      {q:"What do bees produce?", a:"Honey", choices:["Milk","Honey","Wax","Silk"]},
+      {q:"What is 9 squared?", a:"81", choices:["72","81","90","99"]},
+      {q:"A polygon with 4 equal sides and angles is a?", a:"Square", choices:["Rectangle","Rhombus","Square","Trapezoid"]},
+      {q:"Which country gifted the Statue of Liberty to the USA?", a:"France", choices:["Spain","France","England","Italy"]},
+      {q:"What is the main gas in Earth's atmosphere?", a:"Nitrogen", choices:["Oxygen","Nitrogen","Carbon dioxide","Hydrogen"]},
+      {q:"What is the boiling point of water at sea level in °C?", a:"100", choices:["90","95","100","105"]},
+      {q:"What language's alphabet is Cyrillic?", a:"Russian", choices:["Japanese","Greek","Russian","Arabic"]},
+      {q:"Solve: 7 × 8", a:"56", choices:["54","56","58","60"]},
+      {q:"Synonym for 'happy'?", a:"Joyful", choices:["Sad","Angry","Joyful","Tired"]},
+      {q:"Who discovered penicillin?", a:"Alexander Fleming", choices:["Marie Curie","Alexander Fleming","Louis Pasteur","Gregor Mendel"]},
+      {q:"What is the freezing point of water in °C?", a:"0", choices:["-10","0","10","32"]},
+      {q:"What is the smallest prime number?", a:"2", choices:["1","2","3","5"]},
+      {q:"What is the plural of 'mouse'?", a:"Mice", choices:["Mouses","Mice","Mices","Mouse"]},
+      {q:"What is 15% of 200?", a:"30", choices:["20","25","30","35"]},
+      {q:"Which metal is liquid at room temperature?", a:"Mercury", choices:["Gold","Mercury","Iron","Aluminum"]},
+      {q:"What is the study of living organisms called?", a:"Biology", choices:["Chemistry","Geology","Biology","Physics"]},
+      {q:"What does DNA stand for (two-word recognized)?", a:"Deoxyribonucleic acid", choices:["Ribonucleic acid","Deoxyribonucleic acid","Deoxy acid","Nucleic acid"]},
+      {q:"What is the value of pi (approx to 2 decimals)?", a:"3.14", choices:["3.14","2.72","1.62","4.13"]},
+      {q:"What is the antonym of 'scarce'?", a:"Abundant", choices:["Rare","Abundant","Little","Empty"]},
+      {q:"Which planet has rings famously?", a:"Saturn", choices:["Mars","Venus","Saturn","Mercury"]},
+      {q:"What instrument measures temperature?", a:"Thermometer", choices:["Barometer","Thermometer","Hygrometer","Altimeter"]},
+      {q:"What is 1000 divided by 25?", a:"40", choices:["25","35","40","50"]},
+      {q:"What is the base unit of electricity?", a:"Ampere", choices:["Volt","Ohm","Ampere","Watt"]},
+      {q:"Which ocean is the largest?", a:"Pacific", choices:["Atlantic","Indian","Pacific","Arctic"]},
+      {q:"Complete the proverb: 'A picture is worth a ___ of words.'", a:"Thousand", choices:["Hundred","Million","Thousand","Dozen"]},
+      {q:"What kind of triangle has all equal sides?", a:"Equilateral", choices:["Isosceles","Scalene","Right","Equilateral"]},
+      {q:"Who is the author of 'Pride and Prejudice'?", a:"Jane Austen", choices:["Mary Shelley","Jane Austen","Charlotte Brontë","Emily Brontë"]},
+      {q:"What is the chemical symbol for gold?", a:"Au", choices:["Ag","Au","Gd","Ga"]},
+      {q:"What is 3/4 as a decimal?", a:"0.75", choices:["0.25","0.5","0.75","0.85"]},
+      {q:"Which organ is responsible for filtering blood?", a:"Kidney", choices:["Heart","Liver","Kidney","Spleen"]},
+      {q:"Which continent is Egypt in?", a:"Africa", choices:["Asia","Europe","Africa","South America"]},
+      {q:"What is the past tense of 'teach'?", a:"Taught", choices:["Teach","Taught","Teached","Teaching"]},
+      {q:"If a car travels 60 km in 1 hour, what's its speed in m/s? (approx)", a:"16.67", choices:["10","16.67","60","100"]},
+      {q:"What is an antonym for 'transparent'?", a:"Opaque", choices:["Clear","Translucent","Opaque","Thin"]},
+      {q:"Which scientist proposed the law of gravity?", a:"Isaac Newton", choices:["Albert Einstein","Isaac Newton","Galileo","Kepler"]},
+      {q:"What is the currency of Japan?", a:"Yen", choices:["Dollar","Euro","Yen","Won"]},
+      {q:"What literary device uses 'like' or 'as'?", a:"Simile", choices:["Metaphor","Alliteration","Simile","Personification"]},
+      {q:"What is 11 × 11?", a:"121", choices:["111","121","131","141"]},
+      {q:"What does 'CPU' stand for?", a:"Central Processing Unit", choices:["Central Processing Unit","Computer Power Unit","Control Processing Unit","Core Power Unit"]},
+      {q:"What is the rectangular prism volume formula?", a:"Length × Width × Height", choices:["L+W+H","L×W×H","2(L+W+H)","(L×W)/H"]},
+    ];
+
+    let qIndex = 0, qCorrect = 0, qTime = 300, qStarted = false, qMode = 'type', qTimer;
+
+    document.getElementById('mode-type').onclick = () => { qMode = 'type'; document.getElementById('mode-type').classList.remove('ghost'); document.getElementById('mode-mc').classList.add('ghost'); if(qStarted) renderQ(); };
+    document.getElementById('mode-mc').onclick = () => { qMode = 'mc'; document.getElementById('mode-mc').classList.remove('ghost'); document.getElementById('mode-type').classList.add('ghost'); if(qStarted) renderQ(); };
+    document.getElementById('quiz-start').onclick = startQuiz;
+    document.getElementById('quiz-next').onclick = submitQ;
+    document.getElementById('quiz-skip').onclick = () => { qIndex++; if(qIndex >= quizQuestions.length) endQuiz(); else renderQ(); };
+
+    function startQuiz() {
+        if(qStarted) return;
+        qStarted = true; qIndex = 0; qCorrect = 0; qTime = 300;
+        renderQ();
+        qTimer = setInterval(() => {
+            qTime--;
+            updateQTimer();
+            if(qTime <= 0) endQuiz();
+        }, 1000);
+    }
+
+    function renderQ() {
+        const q = quizQuestions[qIndex];
+        document.getElementById('quiz-question').textContent = `${qIndex+1}. ${q.q}`;
+        const container = document.getElementById('quiz-interaction');
+        if(qMode === 'type') {
+            container.innerHTML = `<input id="q-ans" class="answer-typed" type="text" placeholder="Your answer...">`;
+        } else {
+            const choices = [...q.choices].sort(() => Math.random() - 0.5);
+            container.innerHTML = `<div class="choices">${choices.map(c => `<button class="choice-btn" onclick="this.parentElement.querySelectorAll('button').forEach(b=>b.style.background='white');this.style.background='#d0f0d6';this.dataset.sel='1'">${c}</button>`).join('')}</div>`;
+        }
+        document.getElementById('quiz-score').textContent = `${qCorrect} / ${quizQuestions.length}`;
+    }
+
+    function submitQ() {
+        if(!qStarted) return;
+        const q = quizQuestions[qIndex];
+        let correct = false;
+        if(qMode === 'type') {
+            const val = document.getElementById('q-ans').value.trim().toLowerCase();
+            if(val === q.a.toLowerCase()) correct = true;
+        } else {
+            const sel = document.querySelector('.choice-btn[data-sel="1"]');
+            if(sel && sel.textContent.toLowerCase() === q.a.toLowerCase()) correct = true;
+        }
+        if(correct) qCorrect++;
+        qIndex++;
+        if(qIndex >= quizQuestions.length) endQuiz();
+        else renderQ();
+    }
+
+    function updateQTimer() {
+        const m = Math.floor(qTime/60).toString().padStart(2,'0');
+        const s = (qTime%60).toString().padStart(2,'0');
+        document.getElementById('quiz-timer').textContent = `${m}:${s}`;
+    }
+
+    async function endQuiz() {
+        clearInterval(qTimer);
+        qStarted = false;
+        document.getElementById('quiz-interaction').innerHTML = `<div class="center">DONE! Score: ${qCorrect}</div>`;
+        await addPoints(qCorrect);
+    }
+
+    /* --- TIC TAC TOE --- */
+    let tttState = ["","","","","","","","",""], tttChar = "X", tttActive = true;
+    const tttBoard = document.getElementById('ttt-board');
+    const tttStatus = document.getElementById('chess-status');
+
+    function renderTTT() {
+        tttBoard.innerHTML = '';
+        tttState.forEach((val, i) => {
+            const cell = document.createElement('div');
+            cell.className = 'ttt-cell';
+            cell.textContent = val;
+            cell.onclick = () => {
+                if(!tttActive || tttState[i]) return;
+                tttState[i] = tttChar;
+                checkTTT();
+                tttChar = tttChar === "X" ? "O" : "X";
+                renderTTT();
+            };
+            tttBoard.appendChild(cell);
+        });
+        if(tttActive) tttStatus.textContent = `Turn: ${tttChar}`;
+    }
+
+    async function checkTTT() {
+        const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+        for(let combo of wins) {
+            const [a,b,c] = combo;
+            if(tttState[a] && tttState[a] === tttState[b] && tttState[a] === tttState[c]) {
+                tttActive = false;
+                tttStatus.textContent = `Player ${tttState[a]} Wins! (+5 Points)`;
+                if(tttState[a] === "X") await addPoints(5); // Assuming User is always X for points
+                return;
+            }
+        }
+        if(!tttState.includes("")) { tttActive = false; tttStatus.textContent = "Draw!"; }
+    }
+
+    document.getElementById('reset-chess').onclick = () => { tttState = ["","","","","","","","",""]; tttChar = "X"; tttActive = true; renderTTT(); };
+    renderTTT();
+
+    /* --- BONE RUSH --- */
+    const boneWords = ["psychology","acknowledgement","metamorphosis","knowledge","neuroscience","encyclopedia","transformation","synchronization","architecture","bioluminescence","cryptography","photosynthesis","quantification","heterogeneous","interpretation","circumstantial","anthropology","plethora","juxtaposition","ubiquitous","lexicography","methodology","algorithm","polymorphism","concatenation","homeostasis","epistemology","polyhedron","isosceles","parallelogram","conscientious","benevolent","idiosyncratic","onomatopoeia","extraterrestrial","microorganism","electromagnetic","rendezvous","camouflage","meticulous","sagacious","omniscient","philanthropy","dichotomy","ameliorate","ubiquity","reminiscence","circuitous","lexical","phonetics","mellifluous","gregarious","hierarchical","insurmountable","juvenescent","kaleidoscope","lithography","magnanimous","nefarious","obfuscation","parsimonious","quintessential","resilience","subliminal","transcendental","unprecedented","veneration","wanderlust","xenophobia","yesteryear","zealousness","ambidextrous","belligerent","concupiscence","deleterious","effervescent","fortuitous","grandiloquent","harbinger","impervious","juxtapose","keen","labyrinthine","multifarious","nonchalant","obsequious","perspicacious","quixotic","retrospective","soliloquy","temerity","ubiquitousness","vituperative","whimsical","xylophone","yearning","zenith"];
+    let bIndex = 0, bScore = 0, bTime = 300, bStarted = false, bTimer;
+    const bInp = document.getElementById('bone-input');
+
+    document.getElementById('bone-start').onclick = () => {
+        if(bStarted) return;
+        bStarted = true; bScore = 0; bTime = 300; bIndex = 0;
+        nextBone();
+        bTimer = setInterval(() => {
+            bTime--;
+            const m = Math.floor(bTime/60).toString().padStart(2,'0');
+            const s = (bTime%60).toString().padStart(2,'0');
+            document.getElementById('bone-timer').textContent = `${m}:${s}`;
+            if(bTime <= 0) endBone();
+        }, 1000);
+    };
+
+    function nextBone() {
+        document.getElementById('bone-word').textContent = boneWords[bIndex % boneWords.length];
+        bInp.value = ''; bInp.focus();
+    }
+
+    bInp.onkeyup = (e) => {
+        if(!bStarted) return;
+        if(bInp.value.trim().toLowerCase() === boneWords[bIndex % boneWords.length].toLowerCase()) {
+            bScore++;
+            bIndex++;
+            document.getElementById('bone-score').textContent = bScore;
+            nextBone();
+        }
+    };
+
+    async function endBone() {
+        clearInterval(bTimer);
+        bStarted = false;
+        alert("Bones Collected: " + bScore);
+        await addPoints(bScore);
+    }
+
+    // Startup
+    initAuth();
+
+  </script>
+</body>
+</html>
