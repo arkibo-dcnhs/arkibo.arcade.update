@@ -337,7 +337,7 @@
         </div>
         <div class="controls">
           <div class="small">BONES: <span id="bone-score">0</span></div>
-          <div class="small">TIME: <span id="bone-timer">60</span></div>
+          <div class="small">TIME: <span id="bone-timer">180</span></div>
         </div>
       </div>
     </div>
@@ -679,7 +679,7 @@
 
     window.startQuiz = (subject) => {
         qCurrentSub = subject;
-        qIndex = 0; qScore = 0; qTimeLeft = 120;
+        qIndex = 0; qScore = 0; qTimeLeft = 180;
         document.getElementById('quiz-sub-title').textContent = subject;
         showScreen('quiz-screen');
         renderQuestion();
@@ -723,7 +723,7 @@
     /* --- BONE RUSH (150 WORDS) --- */
     const boneWords = [
         "APPLE","BANANA","CHERRY","DRAGON","EAGLE","FOREST","GHOST","HUNTER","ISLAND","JUNGLE","KIBO","LEMON","MOUNTAIN","NIGHT","OCEAN","PIZZA","QUEEN","RIVER","STORM","TIGER",
-        "UNDER","VALLEY","WITCH","XRAY","YACHT","ZEBRA","ARCADIA","BRAVERY","CRYSTAL","DESTINY","ENERGY","FLOWER","GARDEN","HARBOR","INDIGO","JOURNEY","KNIGHT","LANTERN","MIRROR","NEBULA",
+        "UNDER","VALLEY","WITCH","XRAY","YACHT","ZEBRA","ARCADIA","NICO","CRYSTAL","DESTINY","ENERGY","FLOWER","GARDEN","HARBOR","INDIGO","JOURNEY","KNIGHT","LANTERN","MIRROR","NEBULA",
         "ORBIT","PIRATE","QUARTZ","ROCKET","SILVER","TEMPLE","UTOPIA","VORTEX","WIZARD","XENON","YELLOW","ZENITH","ANCIENT","BLOSSOM","CANYON","DESERT","EMERALD","FALCON","GLACIER","HORIZON",
         "ICEBERG","JAVELIN","KINDLE","LAGOON","MAGMA","NOMAD","OASIS","PHANTOM","QUIVER","RADIANT","SPHERE","THUNDER","UMBRA","VELVET","WHISPER","XYLOPHONE","YONDER","ZEPHYR","ALGORITHM","BLIZZARD",
         "CELESTIAL","DIAMOND","ECLIPSE","FIREWORKS","GALAXY","HOLOGRAM","INFINITY","JUPITER","KINETIC","LABYRINTH","MYSTERY","NEPTUNE","OVERLORD","PARADOX","QUANTUM","RENAISSANCE","SPECTRUM","TRIUMPH","UNIVERSE","VELOCITY",
@@ -732,10 +732,10 @@
         "KNOWLEDGE","LEGACY","METEOR","NOSTALGIA","OBSIDIAN","PROPHESY","QUARANTINE","REFLECTION","SURVIVOR","TWILIGHT"
     ];
 
-    let bScore = 0, bTime = 60, bTimer, bActive = false;
+    let bScore = 0, bTime = 180, bTimer, bActive = false;
     document.getElementById('bone-start').onclick = () => {
         if(bActive) return;
-        bActive = true; bScore = 0; bTime = 60;
+        bActive = true; bScore = 0; bTime = 180;
         document.getElementById('bone-score').textContent = "0";
         nextBoneWord();
         bTimer = setInterval(() => {
