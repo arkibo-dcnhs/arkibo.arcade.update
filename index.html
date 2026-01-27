@@ -40,6 +40,7 @@
       padding:16px;
       position:relative;
       min-height: 600px;
+      overflow: hidden;
     }
 
     .logo {
@@ -78,6 +79,8 @@
       font-size:14px;
       cursor:pointer;
       box-shadow: 0 6px 14px rgba(0,0,0,0.06);
+      text-decoration: none;
+      text-align: center;
     }
     .btn.ghost {
       background: transparent;
@@ -170,6 +173,88 @@
       cursor:pointer;
     }
 
+    /* Match-Kibo Styles */
+    .match-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-top: 10px;
+    }
+    .match-card {
+      height: 70px;
+      background: var(--green-2);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      cursor: pointer;
+      color: transparent;
+      transition: background 0.3s;
+    }
+    .match-card.flipped {
+      background: var(--accent);
+      color: var(--green-1);
+    }
+    .match-card.matched {
+      background: #e0e0e0;
+      color: #999;
+      cursor: default;
+    }
+
+    /* Star Clicker Styles */
+    #clicker-area {
+      width: 100%;
+      height: 300px;
+      background: #f0fdf4;
+      border: 2px dashed var(--green-2);
+      position: relative;
+      margin-top: 10px;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    #target-star {
+      position: absolute;
+      font-size: 30px;
+      cursor: pointer;
+      user-select: none;
+      transition: transform 0.1s;
+    }
+
+    /* Jump Kibo Styles */
+    #jump-area {
+      width: 100%;
+      height: 200px;
+      background: #e8f5e9;
+      border-bottom: 4px solid var(--green-1);
+      position: relative;
+      margin-top: 10px;
+      border-radius: 12px 12px 0 0;
+      overflow: hidden;
+      cursor: pointer;
+    }
+    #kibo-player {
+      width: 40px;
+      height: 40px;
+      background: #4caf50;
+      border-radius: 8px;
+      position: absolute;
+      bottom: 0;
+      left: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+    .obstacle {
+      width: 25px;
+      height: 40px;
+      background: #d32f2f;
+      position: absolute;
+      bottom: 0;
+      border-radius: 4px 4px 0 0;
+    }
+
     /* Leaderboard Table */
     .lb-table {
       width: 100%;
@@ -214,13 +299,63 @@
         PLAYER: <span id="display-name">...</span> | POINTS: <span id="display-points">0</span>
       </div>
 
-      <div class="menu-buttons">
+      <div class="menu-buttons" style="max-height: 350px; overflow-y: auto;">
+        <button class="btn" id="to-jump">JUMP KIBO</button>
         <button class="btn" id="to-quiz">QUIZME</button>
         <button class="btn" id="to-chess">TIC-TAC-KIBO</button>
         <button class="btn" id="to-bone">KIBO BONE RUSH</button>
+        <button class="btn" id="to-match">MATCH-KIBO</button>
+        <button class="btn" id="to-clicker">STAR CLICKER</button>
         <button class="btn ghost" id="to-lb">LEADERBOARD</button>
+        <button class="btn ghost" id="logout-btn" style="border-color: #ff8a80; color: #d32f2f; margin-top: 10px;">LOGOUT</button>
       </div>
-      <p class="small center">nlnm dvlp</p>
+    </div>
+
+    <div id="jump-screen" class="screen">
+        <div class="top-row">
+            <h2 style="margin:0">JUMP KIBO</h2>
+            <button class="small-btn ghost" id="jump-home">MENU</button>
+        </div>
+        <div class="quiz-card">
+            <div class="center small">SCORE: <span id="jump-score">0</span> | SPEED: <span id="jump-speed-lvl">1</span></div>
+            <div id="jump-area">
+                <div id="kibo-player">🐶</div>
+            </div>
+            <p class="center small" style="margin-top:5px;">Tap area or press Space to Jump!</p>
+            <div class="center" style="margin-top:10px;">
+                <button class="small-btn" id="jump-start">START RUNNING</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="match-screen" class="screen">
+        <div class="top-row">
+            <h2 style="margin:0">MATCH-KIBO</h2>
+            <button class="small-btn ghost" id="match-home">MENU</button>
+        </div>
+        <div class="quiz-card">
+            <div class="center small">TIME: <span id="match-timer">120</span>s | MATCHES: <span id="match-count">0</span>/10</div>
+            <div class="match-grid" id="match-grid"></div>
+            <div class="center" style="margin-top:15px;">
+                <button class="small-btn" id="match-start">START GAME</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="clicker-screen" class="screen">
+        <div class="top-row">
+            <h2 style="margin:0">STAR CLICKER</h2>
+            <button class="small-btn ghost" id="clicker-home">MENU</button>
+        </div>
+        <div class="quiz-card">
+            <div class="center small">TIME: <span id="clicker-timer">30</span>s | SCORE: <span id="clicker-score">0</span></div>
+            <div id="clicker-area">
+                <div id="target-star" style="display:none;">⭐</div>
+            </div>
+            <div class="center" style="margin-top:15px;">
+                <button class="small-btn" id="clicker-start">START CLICKING</button>
+            </div>
+        </div>
     </div>
 
     <div id="lb-screen" class="screen">
@@ -237,8 +372,7 @@
                         <th>STARS</th>
                     </tr>
                 </thead>
-                <tbody id="lb-body">
-                    </tbody>
+                <tbody id="lb-body"></tbody>
             </table>
         </div>
     </div>
@@ -321,33 +455,23 @@
         appId: "1:647271681508:web:5b51c957aaec76e7668bf1"
     };
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
+    const fbApp = initializeApp(firebaseConfig);
+    const db = getDatabase(fbApp);
 
-    /* --- AUTH LOGIC (SELF-HEALING) --- */
+    /* --- AUTH LOGIC --- */
     let currentUser = null;
     let userPoints = 0;
 
     const nameInput = document.getElementById('username-input');
     const saveBtn = document.getElementById('save-user');
 
-    // HELPER: Removes characters Firebase hates
     function cleanFirebasePath(str) {
         if (!str) return "Player";
-        // Remove . # $ [ ] and ensure it's not a JSON string
         return str.replace(/[.#$[\]{}:"]/g, "_");
     }
 
     async function initAuth() {
         let stored = localStorage.getItem('arkibo_user');
-        
-        // SELF-HEALING: If stored data contains JSON braces or emails, it's corrupted. Clear it.
-        if (stored && (stored.includes('{') || stored.includes('@') || stored.includes('"'))) {
-            console.warn("Corrupted storage detected. Resetting session...");
-            localStorage.removeItem('arkibo_user');
-            stored = null;
-        }
-
         if (stored) {
             currentUser = cleanFirebasePath(stored);
             loadUserData();
@@ -360,11 +484,8 @@
     saveBtn.onclick = async () => {
         const val = nameInput.value.trim();
         if (val.length < 3) return alert("Username too short!");
-        
-        // Clean the input immediately
         currentUser = cleanFirebasePath(val);
         localStorage.setItem('arkibo_user', currentUser);
-        
         const userRef = ref(db, 'users/' + currentUser);
         try {
             const snapshot = await get(userRef);
@@ -374,9 +495,13 @@
             loadUserData();
             showScreen('menu');
         } catch (error) {
-            console.error("Firebase Error:", error);
-            alert("Connection error. Please check your internet.");
+            alert("Connection error.");
         }
+    };
+
+    document.getElementById('logout-btn').onclick = () => {
+        localStorage.removeItem('arkibo_user');
+        location.reload();
     };
 
     function loadUserData() {
@@ -401,21 +526,217 @@
     }
 
     /* --- NAVIGATION --- */
-    const screens = ['menu', 'quiz-screen', 'chess-screen', 'bone-screen', 'auth-screen', 'lb-screen'];
+    const screens = ['menu', 'quiz-screen', 'chess-screen', 'bone-screen', 'auth-screen', 'lb-screen', 'match-screen', 'clicker-screen', 'jump-screen'];
     function showScreen(id) {
         screens.forEach(s => document.getElementById(s).style.display = 'none');
         document.getElementById(id).style.display = 'block';
         if(id === 'lb-screen') loadLeaderboard();
+        // Stop any running jump game if leaving
+        if(id !== 'jump-screen') stopJumpGame();
     }
 
     document.getElementById('to-quiz').onclick = () => showScreen('quiz-screen');
     document.getElementById('to-chess').onclick = () => showScreen('chess-screen');
     document.getElementById('to-bone').onclick = () => showScreen('bone-screen');
+    document.getElementById('to-match').onclick = () => showScreen('match-screen');
+    document.getElementById('to-clicker').onclick = () => showScreen('clicker-screen');
+    document.getElementById('to-jump').onclick = () => showScreen('jump-screen');
     document.getElementById('to-lb').onclick = () => showScreen('lb-screen');
     document.getElementById('lb-back').onclick = () => showScreen('menu');
     document.getElementById('quiz-back').onclick = () => showScreen('menu');
     document.getElementById('chess-home').onclick = () => showScreen('menu');
     document.getElementById('bone-home').onclick = () => showScreen('menu');
+    document.getElementById('match-home').onclick = () => showScreen('menu');
+    document.getElementById('clicker-home').onclick = () => showScreen('menu');
+    document.getElementById('jump-home').onclick = () => showScreen('menu');
+
+    /* --- JUMP KIBO GAME --- */
+    let jumpActive = false, jumpScore = 0, jumpSpeed = 5, jumpInterval;
+    const player = document.getElementById('kibo-player');
+    const jumpArea = document.getElementById('jump-area');
+    let isJumping = false;
+
+    function handleJump() {
+        if (!jumpActive || isJumping) return;
+        isJumping = true;
+        let pos = 0;
+        let upInterval = setInterval(() => {
+            if (pos >= 100) {
+                clearInterval(upInterval);
+                let downInterval = setInterval(() => {
+                    if (pos <= 0) {
+                        clearInterval(downInterval);
+                        isJumping = false;
+                    }
+                    pos -= 5;
+                    player.style.bottom = pos + 'px';
+                }, 20);
+            }
+            pos += 5;
+            player.style.bottom = pos + 'px';
+        }, 20);
+    }
+
+    jumpArea.onclick = handleJump;
+    window.addEventListener('keydown', (e) => { if(e.code === 'Space') handleJump(); });
+
+    function createObstacle() {
+        if (!jumpActive) return;
+        const obs = document.createElement('div');
+        obs.className = 'obstacle';
+        obs.style.right = '-30px';
+        jumpArea.appendChild(obs);
+
+        let obsPos = -30;
+        let moveObs = setInterval(() => {
+            if (!jumpActive) { clearInterval(moveObs); obs.remove(); return; }
+            obsPos += jumpSpeed;
+            obs.style.right = obsPos + 'px';
+
+            // Collision Detection
+            const pRect = player.getBoundingClientRect();
+            const oRect = obs.getBoundingClientRect();
+
+            if (pRect.right > oRect.left && pRect.left < oRect.right && pRect.bottom > oRect.top) {
+                clearInterval(moveObs);
+                endJumpGame();
+            }
+
+            if (obsPos > jumpArea.clientWidth + 30) {
+                clearInterval(moveObs);
+                obs.remove();
+                jumpScore++;
+                document.getElementById('jump-score').textContent = jumpScore;
+                if(jumpScore % 5 === 0) {
+                    jumpSpeed += 0.5;
+                    document.getElementById('jump-speed-lvl').textContent = (jumpSpeed - 4).toFixed(1);
+                }
+            }
+        }, 20);
+
+        setTimeout(createObstacle, Math.random() * (2000 - jumpSpeed * 100) + 1000);
+    }
+
+    function startJumpGame() {
+        if (jumpActive) return;
+        jumpActive = true; jumpScore = 0; jumpSpeed = 5;
+        document.getElementById('jump-score').textContent = "0";
+        document.getElementById('jump-speed-lvl').textContent = "1";
+        createObstacle();
+    }
+
+    async function endJumpGame() {
+        jumpActive = false;
+        alert("GAME OVER! Final Score: " + jumpScore);
+        await addPoints(jumpScore);
+        // Clear obstacles
+        document.querySelectorAll('.obstacle').forEach(o => o.remove());
+    }
+
+    function stopJumpGame() {
+        jumpActive = false;
+        document.querySelectorAll('.obstacle').forEach(o => o.remove());
+    }
+
+    document.getElementById('jump-start').onclick = startJumpGame;
+
+    /* --- MATCH-KIBO GAME --- */
+    let matchIcons = ['🍎', '🍎', '⭐', '⭐', '🎮', '🎮', '🚀', '🚀', '🔥', '🔥', '💎', '💎', '👻', '👻', '🍀', '🍀', '🍄', '🍄', '🌍', '🌍'];
+    let flipped = [], matchCount = 0, matchTime = 120, matchActive = false, matchTimer;
+
+    function initMatch() {
+        const grid = document.getElementById('match-grid');
+        grid.innerHTML = '';
+        matchIcons.sort(() => Math.random() - 0.5);
+        matchIcons.forEach((icon, i) => {
+            const card = document.createElement('div');
+            card.className = 'match-card';
+            card.dataset.icon = icon;
+            card.dataset.index = i;
+            card.textContent = icon;
+            card.onclick = () => flipMatch(card);
+            grid.appendChild(card);
+        });
+    }
+
+    function flipMatch(card) {
+        if (!matchActive || flipped.length >= 2 || card.classList.contains('flipped') || card.classList.contains('matched')) return;
+        card.classList.add('flipped');
+        flipped.push(card);
+        if (flipped.length === 2) {
+            if (flipped[0].dataset.icon === flipped[1].dataset.icon) {
+                flipped.forEach(c => c.classList.add('matched'));
+                flipped = [];
+                matchCount++;
+                document.getElementById('match-count').textContent = matchCount;
+                if (matchCount === 10) {
+                    addPoints(10);
+                    alert("Board Cleared! +10 Points");
+                    matchCount = 0;
+                    document.getElementById('match-count').textContent = "0";
+                    initMatch();
+                }
+            } else {
+                setTimeout(() => {
+                    flipped.forEach(c => c.classList.remove('flipped'));
+                    flipped = [];
+                }, 700);
+            }
+        }
+    }
+
+    document.getElementById('match-start').onclick = () => {
+        if (matchActive) return;
+        matchActive = true; matchTime = 120; matchCount = 0;
+        initMatch();
+        matchTimer = setInterval(() => {
+            matchTime--;
+            document.getElementById('match-timer').textContent = matchTime;
+            if (matchTime <= 0) {
+                clearInterval(matchTimer);
+                matchActive = false;
+                alert("Game Over!");
+            }
+        }, 1000);
+    };
+
+    /* --- STAR CLICKER GAME --- */
+    let clickScore = 0, clickTime = 30, clickActive = false, clickTimer;
+    const star = document.getElementById('target-star');
+    const area = document.getElementById('clicker-area');
+
+    function moveStar() {
+        const x = Math.random() * (area.clientWidth - 40);
+        const y = Math.random() * (area.clientHeight - 40);
+        star.style.left = x + 'px';
+        star.style.top = y + 'px';
+    }
+
+    star.onclick = () => {
+        if (!clickActive) return;
+        clickScore++;
+        document.getElementById('clicker-score').textContent = clickScore;
+        moveStar();
+    };
+
+    document.getElementById('clicker-start').onclick = () => {
+        if (clickActive) return;
+        clickActive = true; clickScore = 0; clickTime = 30;
+        document.getElementById('clicker-score').textContent = "0";
+        star.style.display = 'block';
+        moveStar();
+        clickTimer = setInterval(() => {
+            clickTime--;
+            document.getElementById('clicker-timer').textContent = clickTime;
+            if (clickTime <= 0) {
+                clearInterval(clickTimer);
+                clickActive = false;
+                star.style.display = 'none';
+                addPoints(Math.floor(clickScore / 2));
+                alert("Time up! Earned " + Math.floor(clickScore / 2) + " stars.");
+            }
+        }, 1000);
+    };
 
     /* --- LEADERBOARD --- */
     function loadLeaderboard() {
@@ -436,7 +757,7 @@
         });
     }
 
-    /* --- QUIZ LOGIC (PRESERVED) --- */
+    /* --- QUIZ LOGIC --- */
     const quizQuestions = [
       {q:"What is the capital city of Japan?", a:"Tokyo", choices:["Kyoto","Tokyo","Osaka","Hiroshima"]},
       {q:"Who painted the Mona Lisa?", a:"Leonardo da Vinci", choices:["Pablo Picasso","Leonardo da Vinci","Vincent van Gogh","Claude Monet"]},
@@ -465,7 +786,7 @@
       {q:"What is 15% of 200?", a:"30", choices:["20","25","30","35"]},
       {q:"Which metal is liquid at room temperature?", a:"Mercury", choices:["Gold","Mercury","Iron","Aluminum"]},
       {q:"What is the study of living organisms called?", a:"Biology", choices:["Chemistry","Geology","Biology","Physics"]},
-      {q:"What does DNA stand for (two-word recognized)?", a:"Deoxyribonucleic acid", choices:["Ribonucleic acid","Deoxyribonucleic acid","Deoxy acid","Nucleic acid"]},
+      {q:"What does DNA stand for?", a:"Deoxyribonucleic acid", choices:["Ribonucleic acid","Deoxyribonucleic acid","Deoxy acid","Nucleic acid"]},
       {q:"What is the value of pi (approx to 2 decimals)?", a:"3.14", choices:["3.14","2.72","1.62","4.13"]},
       {q:"What is the antonym of 'scarce'?", a:"Abundant", choices:["Rare","Abundant","Little","Empty"]},
       {q:"Which planet has rings famously?", a:"Saturn", choices:["Mars","Venus","Saturn","Mercury"]},
@@ -594,48 +915,51 @@
     renderTTT();
 
     /* --- BONE RUSH --- */
-    const boneWords = ["psychology","acknowledgement","metamorphosis","knowledge","neuroscience","encyclopedia","transformation","synchronization","architecture","bioluminescence","cryptography","photosynthesis","quantification","heterogeneous","interpretation","circumstantial","anthropology","plethora","juxtaposition","ubiquitous","lexicography","methodology","algorithm","polymorphism","concatenation","homeostasis","epistemology","polyhedron","isosceles","parallelogram","conscientious","benevolent","idiosyncratic","onomatopoeia","extraterrestrial","microorganism","electromagnetic","rendezvous","camouflage","meticulous","sagacious","omniscient","philanthropy","dichotomy","ameliorate","ubiquity","reminiscence","circuitous","lexical","phonetics","mellifluous","gregarious","hierarchical","insurmountable","juvenescent","kaleidoscope","lithography","magnanimous","nefarious","obfuscation","parsimonious","quintessential","resilience","subliminal","transcendental","unprecedented","veneration","wanderlust","xenophobia","yesteryear","zealousness","ambidextrous","belligerent","concupiscence","deleterious","effervescent","fortuitous","grandiloquent","harbinger","impervious","juxtapose","keen","labyrinthine","multifarious","nonchalant","obsequious","perspicacious","quixotic","retrospective","soliloquy","temerity","ubiquitousness","vituperative","whimsical","xylophone","yearning","zenith"];
-    let bIndex = 0, bScore = 0, bTime = 300, bStarted = false, bTimer;
-    const bInp = document.getElementById('bone-input');
+    const boneWords = ["psychology","acknowledgement","metamorphosis","knowledge","neuroscience","encyclopedia","transformation","synchronization","architecture","bioluminescence","cryptography","photosynthesis","quantification","heterogeneous","interpretation","circumstantial","anthropology","plethora","juxtaposition","ubiquitous","lexicography","methodology","algorithm","polymorphism","concatenation","homeostasis","epistemology","polyhedron","isosceles","parallelogram","conscientious","benevolent","idiosyncratic","onomatopoeia","extraterrestrial","microorganism","electromagnetic","rendezvous","camouflage","meticulous","sagacious","omniscient","philanthropy","dichotomy","ameliorate","ubiquity","reminisce"];
+    let boneActive = false, boneScore = 0, boneTime = 300, boneTimer;
+    const boneWordDisp = document.getElementById('bone-word');
+    const boneInput = document.getElementById('bone-input');
 
-    document.getElementById('bone-start').onclick = () => {
-        if(bStarted) return;
-        bStarted = true; bScore = 0; bTime = 300; bIndex = 0;
+    function startBone() {
+        if(boneActive) return;
+        boneActive = true; boneScore = 0; boneTime = 300;
+        boneInput.value = ''; boneInput.focus();
         nextBone();
-        bTimer = setInterval(() => {
-            bTime--;
-            const m = Math.floor(bTime/60).toString().padStart(2,'0');
-            const s = (bTime%60).toString().padStart(2,'0');
+        boneTimer = setInterval(() => {
+            boneTime--;
+            const m = Math.floor(boneTime/60).toString().padStart(2,'0');
+            const s = (boneTime%60).toString().padStart(2,'0');
             document.getElementById('bone-timer').textContent = `${m}:${s}`;
-            if(bTime <= 0) endBone();
+            if(boneTime <= 0) endBone();
         }, 1000);
-    };
-
-    function nextBone() {
-        document.getElementById('bone-word').textContent = boneWords[bIndex % boneWords.length];
-        bInp.value = ''; bInp.focus();
     }
 
-    bInp.onkeyup = (e) => {
-        if(!bStarted) return;
-        if(bInp.value.trim().toLowerCase() === boneWords[bIndex % boneWords.length].toLowerCase()) {
-            bScore++;
-            bIndex++;
-            document.getElementById('bone-score').textContent = bScore;
+    function nextBone() {
+        const w = boneWords[Math.floor(Math.random()*boneWords.length)];
+        boneWordDisp.textContent = w;
+    }
+
+    boneInput.oninput = () => {
+        if(!boneActive) return;
+        if(boneInput.value.trim().toLowerCase() === boneWordDisp.textContent.toLowerCase()) {
+            boneScore++;
+            document.getElementById('bone-score').textContent = boneScore;
+            boneInput.value = '';
             nextBone();
         }
     };
 
     async function endBone() {
-        clearInterval(bTimer);
-        bStarted = false;
-        alert("Bones Collected: " + bScore);
-        await addPoints(bScore);
+        clearInterval(boneTimer);
+        boneActive = false;
+        boneWordDisp.textContent = "DONE!";
+        await addPoints(boneScore);
     }
 
-    // Initialize the App
-    initAuth();
+    document.getElementById('bone-start').onclick = startBone;
 
+    // Initialize Auth
+    initAuth();
   </script>
 </body>
 </html>
