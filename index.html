@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
   <title>Arkibo Arcade</title>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
   
@@ -18,7 +18,7 @@
     }
 
     * {box-sizing: border-box;}
-    html,body{height:100%;}
+    html,body{height:100%; overflow: hidden;}
     body{
       margin:0;
       font-family:'Poppins',sans-serif;
@@ -27,9 +27,8 @@
       display:flex;
       align-items:center;
       justify-content:center;
-      padding:16px;
+      padding:10px;
       -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
       text-transform:uppercase;
     }
 
@@ -41,18 +40,19 @@
       box-shadow: 0 8px 24px rgba(0,0,0,0.08);
       padding:16px;
       position:relative;
-      min-height: 600px;
-      overflow: hidden;
+      height: 95vh;
+      display: flex;
+      flex-direction: column;
     }
 
     .logo {
       display:block;
       margin:8px auto 6px auto;
-      width:100px;
-      height:100px;
+      width:80px;
+      height:80px;
       object-fit:cover;
       border-radius:20px;
-      border:6px solid rgba(255,255,255,0.6);
+      border:4px solid rgba(255,255,255,0.6);
       box-shadow: 0 6px 18px rgba(0,0,0,0.06);
     }
 
@@ -69,6 +69,7 @@
       flex-direction:column;
       gap:10px;
       padding:6px 8px 18px 8px;
+      overflow-y: auto;
     }
 
     .btn {
@@ -91,8 +92,8 @@
     }
 
     /* screens */
-    .screen { display:none; padding:8px; }
-    .screen.active { display:block; }
+    .screen { display:none; flex-direction: column; height: 100%; width: 100%; overflow-y: auto; }
+    .screen.active { display:flex; }
 
     .top-row {
       display:flex;
@@ -102,20 +103,8 @@
       margin-bottom:8px;
     }
 
-    .icon-large {
-      width:72px;
-      height:72px;
-      object-fit:cover;
-      border-radius:20px;
-      border:6px solid rgba(255,255,255,0.6);
-    }
-
-    .icon-medium {
-      width:56px;
-      height:56px;
-      object-fit:cover;
-      border-radius:16px;
-    }
+    .icon-large { width:60px; height:60px; border-radius:15px; }
+    .icon-medium { width:40px; height:40px; border-radius:10px; }
 
     .small { font-size:11px; opacity:0.85; }
 
@@ -126,7 +115,7 @@
       padding:12px;
       margin-bottom:10px;
     }
-    .question { font-size:13px; margin-bottom:8px; min-height:44px; }
+    .question { font-size:13px; margin-bottom:8px; font-weight: 700; }
     .choices { display:flex; flex-direction:column; gap:8px; }
     .choice-btn {
       background:white;
@@ -135,6 +124,7 @@
       border:1px solid rgba(0,0,0,0.06);
       font-weight:600;
       cursor:pointer;
+      font-size: 12px;
     }
     input[type="text"].answer-typed {
       width:100%;
@@ -144,7 +134,7 @@
       font-weight:600;
     }
 
-    .controls { display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; }
+    .controls { display:flex; gap:8px; margin-top:10px; flex-wrap:wrap; justify-content: center; }
     .small-btn {
       padding:8px 10px;
       border-radius:10px;
@@ -153,139 +143,105 @@
       color:#053608;
       font-weight:700;
       cursor:pointer;
+      font-size: 11px;
     }
 
-    /* Chess Styles */
+    /* Chess Fixed Dimensions */
+    #chess-board-container {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      margin: 10px 0;
+    }
     #chess-board {
       display: grid;
       grid-template-columns: repeat(8, 1fr);
-      width: 100%;
-      aspect-ratio: 1/1;
+      width: 320px; /* Fixed for mobile stability */
+      height: 320px;
       border: 4px solid var(--green-1);
-      border-radius: 4px;
-      margin-top: 10px;
       touch-action: none;
     }
     .chess-square {
-      width: 100%;
-      height: 100%;
+      width: 40px;
+      height: 40px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 30px;
+      font-size: 28px;
       cursor: pointer;
       user-select: none;
     }
     .chess-square.light { background: var(--chess-light); }
     .chess-square.dark { background: var(--chess-dark); }
     .chess-square.selected { background: #f7e365 !important; }
-    .chess-square.valid-move::after {
-      content: '';
-      width: 12px;
-      height: 12px;
-      background: rgba(0,0,0,0.2);
-      border-radius: 50%;
-    }
 
     /* Tic Tac Toe */
     .ttt-board {
       display:grid;
       grid-template-columns: repeat(3, 1fr);
       gap:8px;
-      max-width:300px;
+      width: 240px;
       margin:8px auto;
     }
     .ttt-cell {
       background: var(--accent);
-      height:80px;
+      height:70px;
       display:flex;
       align-items:center;
       justify-content:center;
-      font-size:36px;
+      font-size:32px;
       font-weight:800;
       border-radius:10px;
-      cursor:pointer;
     }
 
-    /* Match-Kibo Styles */
+    /* Match-Kibo */
     .match-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
-      margin-top: 10px;
+      gap: 5px;
     }
     .match-card {
-      height: 70px;
+      height: 60px;
       background: var(--green-2);
       border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 24px;
+      font-size: 20px;
       cursor: pointer;
       color: transparent;
-      transition: background 0.3s;
     }
-    .match-card.flipped {
-      background: var(--accent);
-      color: var(--green-1);
-    }
-    .match-card.matched {
-      background: #e0e0e0;
-      color: #999;
-      cursor: default;
-    }
+    .match-card.flipped { background: var(--accent); color: var(--green-1); }
+    .match-card.matched { background: #eee; color: #ccc; }
 
-    /* Star Clicker Styles */
     #clicker-area {
       width: 100%;
-      height: 300px;
+      height: 250px;
       background: #f0fdf4;
       border: 2px dashed var(--green-2);
       position: relative;
-      margin-top: 10px;
       border-radius: 12px;
       overflow: hidden;
     }
-    #target-star {
-      position: absolute;
-      font-size: 30px;
-      cursor: pointer;
-      user-select: none;
-      transition: transform 0.1s;
-    }
+    #target-star { position: absolute; font-size: 30px; cursor: pointer; }
 
-    /* Leaderboard Table */
-    .lb-table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-      font-size: 14px;
-    }
-    .lb-table th {
-      background: var(--green-1);
-      color: white;
-      padding: 8px;
-      text-align: left;
-    }
-    .lb-table td {
-      padding: 8px;
-      border-bottom: 1px solid #eee;
-    }
+    .lb-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .lb-table th { background: var(--green-1); color: white; padding: 6px; }
+    .lb-table td { padding: 6px; border-bottom: 1px solid #eee; text-align: center; }
     .my-row { background: #fffde7; font-weight: bold; }
 
-    .word-display { font-size:18px; font-weight:800; margin:8px 0; min-height:30px; }
+    .word-display { font-size:22px; font-weight:800; margin:10px 0; color: var(--green-1); }
     .center { text-align:center; }
+    .sub-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 10px; }
   </style>
 </head>
 <body>
 
   <div class="app" id="app">
     
-    <div id="auth-screen" class="screen">
+    <div id="auth-screen" class="screen active">
       <img class="logo" src="https://i.imgur.com/gguUeAe.png" alt="Logo" />
       <h1>IDENTIFY YOURSELF</h1>
-      <p class="center small">Enter a username to track your Star Points.</p>
       <div class="menu-buttons">
         <input type="text" id="username-input" class="answer-typed" placeholder="Username..." style="text-align:center">
         <button class="btn" id="save-user">START ADVENTURE</button>
@@ -296,10 +252,9 @@
       <img class="logo" src="https://i.imgur.com/gguUeAe.png" alt="Logo" />
       <h1>ARKIBO ARCADE</h1>
       <div class="center small" style="margin-bottom:15px;">
-        PLAYER: <span id="display-name">...</span> | POINTS: <span id="display-points">0</span>
+        PLAYER: <span id="display-name">...</span> | STARS: <span id="display-points">0</span>
       </div>
-
-      <div class="menu-buttons" style="max-height: 350px; overflow-y: auto;">
+      <div class="menu-buttons">
         <button class="btn" id="to-chess-kibo">KIBO-CHESS</button>
         <button class="btn" id="to-quiz">QUIZME</button>
         <button class="btn" id="to-ttt">TIC-TAC-KIBO</button>
@@ -307,109 +262,60 @@
         <button class="btn" id="to-match">MATCH-KIBO</button>
         <button class="btn" id="to-clicker">STAR CLICKER</button>
         <button class="btn ghost" id="to-lb">LEADERBOARD</button>
-        <button class="btn ghost" id="logout-btn" style="border-color: #ff8a80; color: #d32f2f; margin-top: 10px;">LOGOUT</button>
+        <button class="btn ghost" id="logout-btn" style="border-color: #ff8a80; color: #d32f2f;">LOGOUT</button>
       </div>
     </div>
 
     <div id="chess-kibo-screen" class="screen">
         <div class="top-row">
-            <h2 style="margin:0">KIBO-CHESS</h2>
-            <button class="small-btn ghost" id="chess-kibo-home">MENU</button>
+            <h2 style="margin:0">CHESS</h2>
+            <button class="small-btn ghost" onclick="goHome()">MENU</button>
         </div>
         <div class="quiz-card">
             <div class="center small" id="chess-kibo-status">WHITE'S TURN</div>
-            <div id="chess-board"></div>
-            <p class="center small" style="margin-top:10px;">Win: 50⭐ | Draw: 25⭐</p>
+            <div id="chess-board-container"><div id="chess-board"></div></div>
             <div class="center" style="margin-top:10px;">
-                <button class="small-btn" id="chess-kibo-reset">RESET GAME</button>
+                <button class="small-btn" id="chess-kibo-reset">RESET</button>
             </div>
         </div>
     </div>
 
-    <div id="match-screen" class="screen">
+    <div id="quiz-select-screen" class="screen">
         <div class="top-row">
-            <h2 style="margin:0">MATCH-KIBO</h2>
-            <button class="small-btn ghost" id="match-home">MENU</button>
+            <h2>SELECT SUBJECT</h2>
+            <button class="small-btn ghost" onclick="goHome()">BACK</button>
         </div>
-        <div class="quiz-card">
-            <div class="center small">TIME: <span id="match-timer">120</span>s | MATCHES: <span id="match-count">0</span>/10</div>
-            <div class="match-grid" id="match-grid"></div>
-            <div class="center" style="margin-top:15px;">
-                <button class="small-btn" id="match-start">START GAME</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="clicker-screen" class="screen">
-        <div class="top-row">
-            <h2 style="margin:0">STAR CLICKER</h2>
-            <button class="small-btn ghost" id="clicker-home">MENU</button>
-        </div>
-        <div class="quiz-card">
-            <div class="center small">TIME: <span id="clicker-timer">30</span>s | SCORE: <span id="clicker-score">0</span></div>
-            <div id="clicker-area">
-                <div id="target-star" style="display:none;">⭐</div>
-            </div>
-            <div class="center" style="margin-top:15px;">
-                <button class="small-btn" id="clicker-start">START CLICKING</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="lb-screen" class="screen">
-        <div class="top-row">
-            <h2>LIVE RANKINGS</h2>
-            <button class="small-btn ghost" id="lb-back">BACK</button>
-        </div>
-        <div style="max-height: 400px; overflow-y: auto;">
-            <table class="lb-table">
-                <thead>
-                    <tr>
-                        <th>RANK</th>
-                        <th>USERNAME</th>
-                        <th>STARS</th>
-                    </tr>
-                </thead>
-                <tbody id="lb-body"></tbody>
-            </table>
+        <div class="sub-grid">
+            <button class="btn" onclick="startQuiz('English')">English</button>
+            <button class="btn" onclick="startQuiz('Math')">Math</button>
+            <button class="btn" onclick="startQuiz('History')">History</button>
+            <button class="btn" onclick="startQuiz('Science')">Science</button>
+            <button class="btn" onclick="startQuiz('General')">General</button>
         </div>
     </div>
 
     <div id="quiz-screen" class="screen">
       <div class="top-row">
-        <img src="https://i.imgur.com/gguUeAe.png" class="icon-medium" />
-        <div style="flex:1;margin-left:8px;">
-          <h2 style="margin:0">QUIZME</h2>
-        </div>
+        <h2 id="quiz-sub-title">QUIZ</h2>
         <div style="text-align:right;">
-          <div class="small">SCORE</div>
-          <div id="quiz-score" style="font-weight:800">0 / 0</div>
+          <div class="small">SCORE: <span id="quiz-score">0</span></div>
+          <div class="small">TIME: <span id="quiz-timer">00:00</span></div>
         </div>
       </div>
       <div class="quiz-card">
-        <div class="question" id="quiz-question">Ready?</div>
-        <div style="display:flex;gap:4px;margin-bottom:8px;">
-          <button class="small-btn" id="mode-type">TYPE</button>
-          <button class="small-btn ghost" id="mode-mc">MC</button>
-          <button class="small-btn" id="quiz-start">START</button>
-        </div>
+        <div class="question" id="quiz-question">...</div>
         <div id="quiz-interaction"></div>
         <div class="controls">
           <button class="small-btn" id="quiz-next">NEXT</button>
-          <button class="small-btn ghost" id="quiz-skip">SKIP</button>
-          <button class="small-btn ghost" id="quiz-back">MENU</button>
-        </div>
-        <div class="score-timer">
-          <div class="small">Time: <span id="quiz-timer">05:00</span></div>
+          <button class="small-btn ghost" onclick="goHome()">QUIT</button>
         </div>
       </div>
     </div>
 
     <div id="ttt-screen" class="screen">
       <div class="top-row">
-        <img src="https://i.imgur.com/3npgp4h.png" class="icon-large" />
-        <h2 style="margin:0">TIC-TAC-KIBO</h2>
-        <button class="small-btn" id="ttt-home">MENU</button>
+        <h2>TIC-TAC-KIBO</h2>
+        <button class="small-btn ghost" onclick="goHome()">MENU</button>
       </div>
       <div class="ttt-board" id="ttt-board"></div>
       <div class="center">
@@ -420,21 +326,61 @@
 
     <div id="bone-screen" class="screen">
       <div class="top-row">
-        <img src="https://i.imgur.com/V6qQgi1.png" class="icon-large" />
-        <h2 style="margin:0">BONE RUSH</h2>
-        <button class="small-btn" id="bone-home">MENU</button>
+        <h2>BONE RUSH</h2>
+        <button class="small-btn ghost" onclick="goHome()">MENU</button>
       </div>
       <div class="quiz-card center">
-        <div class="word-display" id="bone-word">PRESS START</div>
+        <div class="word-display" id="bone-word">READY?</div>
         <input type="text" id="bone-input" class="answer-typed" placeholder="Type here..." autocomplete="off" />
         <div style="margin-top:10px;">
           <button class="small-btn" id="bone-start">START</button>
         </div>
-        <div class="score-timer" style="margin-top:10px;">
-          <div class="small">Bones: <span id="bone-score">0</span></div>
-          <div class="small">Time: <span id="bone-timer">05:00</span></div>
+        <div class="controls">
+          <div class="small">BONES: <span id="bone-score">0</span></div>
+          <div class="small">TIME: <span id="bone-timer">60</span></div>
         </div>
       </div>
+    </div>
+
+    <div id="match-screen" class="screen">
+        <div class="top-row">
+            <h2>MATCH-KIBO</h2>
+            <button class="small-btn ghost" onclick="goHome()">MENU</button>
+        </div>
+        <div class="quiz-card">
+            <div class="center small">TIME: <span id="match-timer">120</span>s | MATCHES: <span id="match-count">0</span>/10</div>
+            <div class="match-grid" id="match-grid"></div>
+            <div class="center" style="margin-top:15px;">
+                <button class="small-btn" id="match-start">START</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="clicker-screen" class="screen">
+        <div class="top-row">
+            <h2>STAR CLICKER</h2>
+            <button class="small-btn ghost" onclick="goHome()">MENU</button>
+        </div>
+        <div class="quiz-card">
+            <div class="center small">TIME: <span id="clicker-timer">30</span>s | SCORE: <span id="clicker-score">0</span></div>
+            <div id="clicker-area">
+                <div id="target-star" style="display:none;">⭐</div>
+            </div>
+            <div class="center" style="margin-top:15px;">
+                <button class="small-btn" id="clicker-start">START</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="lb-screen" class="screen">
+        <div class="top-row">
+            <h2>RANKINGS</h2>
+            <button class="small-btn ghost" onclick="goHome()">BACK</button>
+        </div>
+        <table class="lb-table">
+            <thead><tr><th>RANK</th><th>USER</th><th>STARS</th></tr></thead>
+            <tbody id="lb-body"></tbody>
+        </table>
     </div>
 
   </div>
@@ -458,45 +404,41 @@
     const fbApp = initializeApp(firebaseConfig);
     const db = getDatabase(fbApp);
 
-    /* --- AUTH LOGIC --- */
     let currentUser = null;
     let userPoints = 0;
 
+    /* --- HELPERS --- */
+    window.goHome = () => {
+        clearIntervals();
+        showScreen('menu');
+    }
+
+    function clearIntervals() {
+        clearInterval(qTimer);
+        clearInterval(bTimer);
+        clearInterval(matchTimer);
+        clearInterval(clickTimer);
+    }
+
+    function cleanFirebasePath(str) { return str.replace(/[.#$[\]{}:"]/g, "_"); }
+
+    /* --- AUTH --- */
     const nameInput = document.getElementById('username-input');
     const saveBtn = document.getElementById('save-user');
-
-    function cleanFirebasePath(str) {
-        if (!str) return "Player";
-        return str.replace(/[.#$[\]{}:"]/g, "_");
-    }
-
-    async function initAuth() {
-        let stored = localStorage.getItem('arkibo_user');
-        if (stored) {
-            currentUser = cleanFirebasePath(stored);
-            loadUserData();
-            showScreen('menu');
-        } else {
-            showScreen('auth-screen');
-        }
-    }
 
     saveBtn.onclick = async () => {
         const val = nameInput.value.trim();
         if (val.length < 3) return alert("Username too short!");
         currentUser = cleanFirebasePath(val);
         localStorage.setItem('arkibo_user', currentUser);
+        
         const userRef = ref(db, 'users/' + currentUser);
-        try {
-            const snapshot = await get(userRef);
-            if (!snapshot.exists()) {
-                await set(userRef, { username: currentUser, points: 0 });
-            }
-            loadUserData();
-            showScreen('menu');
-        } catch (error) {
-            alert("Connection error.");
+        const snapshot = await get(userRef);
+        if (!snapshot.exists()) {
+            await set(userRef, { username: currentUser, points: 0 });
         }
+        loadUserData();
+        showScreen('menu');
     };
 
     document.getElementById('logout-btn').onclick = () => {
@@ -507,8 +449,7 @@
     function loadUserData() {
         if (!currentUser) return;
         document.getElementById('display-name').textContent = currentUser;
-        const userRef = ref(db, 'users/' + currentUser);
-        onValue(userRef, (snapshot) => {
+        onValue(ref(db, 'users/' + currentUser), (snapshot) => {
             const data = snapshot.val();
             if (data) {
                 userPoints = data.points || 0;
@@ -519,45 +460,29 @@
 
     async function addPoints(amount) {
         if (amount <= 0 || !currentUser) return;
-        const userRef = ref(db, 'users/' + currentUser);
-        await update(userRef, {
-            points: userPoints + amount
-        });
+        await update(ref(db, 'users/' + currentUser), { points: userPoints + amount });
     }
 
     /* --- NAVIGATION --- */
-    const screens = ['menu', 'quiz-screen', 'ttt-screen', 'bone-screen', 'auth-screen', 'lb-screen', 'match-screen', 'clicker-screen', 'chess-kibo-screen'];
     function showScreen(id) {
-        screens.forEach(s => document.getElementById(s).style.display = 'none');
-        document.getElementById(id).style.display = 'block';
+        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
         if(id === 'lb-screen') loadLeaderboard();
         if(id === 'chess-kibo-screen') initChess();
     }
 
-    document.getElementById('to-quiz').onclick = () => showScreen('quiz-screen');
+    document.getElementById('to-quiz').onclick = () => showScreen('quiz-select-screen');
     document.getElementById('to-ttt').onclick = () => showScreen('ttt-screen');
     document.getElementById('to-bone').onclick = () => showScreen('bone-screen');
     document.getElementById('to-match').onclick = () => showScreen('match-screen');
     document.getElementById('to-clicker').onclick = () => showScreen('clicker-screen');
     document.getElementById('to-chess-kibo').onclick = () => showScreen('chess-kibo-screen');
     document.getElementById('to-lb').onclick = () => showScreen('lb-screen');
-    document.getElementById('lb-back').onclick = () => showScreen('menu');
-    document.getElementById('quiz-back').onclick = () => showScreen('menu');
-    document.getElementById('ttt-home').onclick = () => showScreen('menu');
-    document.getElementById('bone-home').onclick = () => showScreen('menu');
-    document.getElementById('match-home').onclick = () => showScreen('menu');
-    document.getElementById('clicker-home').onclick = () => showScreen('menu');
-    document.getElementById('chess-kibo-home').onclick = () => showScreen('menu');
 
-    /* --- KIBO-CHESS LOGIC --- */
+    /* --- CHESS --- */
     let game = new Chess();
-    const boardEl = document.getElementById('chess-board');
     let selectedSquare = null;
-
-    const pieceMap = {
-        'p': '♟', 'r': '♜', 'n': '♞', 'b': '♝', 'q': '♛', 'k': '♚',
-        'P': '♙', 'R': '♖', 'N': '♘', 'B': '♗', 'Q': '♕', 'K': '♔'
-    };
+    const pieceMap = { 'p': '♟', 'r': '♜', 'n': '♞', 'b': '♝', 'q': '♛', 'k': '♚', 'P': '♙', 'R': '♖', 'N': '♘', 'B': '♗', 'Q': '♕', 'K': '♔' };
 
     function initChess() {
         game = new Chess();
@@ -567,328 +492,386 @@
     }
 
     function renderBoard() {
+        const boardEl = document.getElementById('chess-board');
         boardEl.innerHTML = '';
         const board = game.board();
         for (let i = 0; i < 8; i++) {
             for (let j = 0; j < 8; j++) {
-                const square = document.createElement('div');
-                const squareName = String.fromCharCode(97 + j) + (8 - i);
-                square.className = `chess-square ${(i + j) % 2 === 0 ? 'light' : 'dark'}`;
-                square.dataset.pos = squareName;
-                
+                const sq = document.createElement('div');
+                const pos = String.fromCharCode(97 + j) + (8 - i);
+                sq.className = `chess-square ${(i + j) % 2 === 0 ? 'light' : 'dark'}`;
                 const piece = board[i][j];
                 if (piece) {
-                    square.textContent = pieceMap[piece.color === 'w' ? piece.type.toUpperCase() : piece.type];
-                    square.style.color = piece.color === 'w' ? '#fff' : '#000';
-                    square.style.textShadow = piece.color === 'w' ? '0 0 2px #000' : 'none';
+                    sq.textContent = pieceMap[piece.color === 'w' ? piece.type.toUpperCase() : piece.type];
+                    sq.style.color = piece.color === 'w' ? '#fff' : '#000';
                 }
-
-                if (selectedSquare === squareName) square.classList.add('selected');
-
-                square.onclick = () => handleSquareClick(squareName);
-                boardEl.appendChild(square);
+                if (selectedSquare === pos) sq.classList.add('selected');
+                sq.onclick = () => handleChessClick(pos);
+                boardEl.appendChild(sq);
             }
         }
     }
 
-    async function handleSquareClick(pos) {
+    async function handleChessClick(pos) {
         if (game.game_over()) return;
-
-        if (selectedSquare === pos) {
-            selectedSquare = null;
-            renderBoard();
-            return;
-        }
-
+        if (selectedSquare === pos) { selectedSquare = null; renderBoard(); return; }
         const move = game.move({ from: selectedSquare, to: pos, promotion: 'q' });
-
         if (move) {
-            selectedSquare = null;
-            renderBoard();
-            updateStatus();
-            
+            selectedSquare = null; renderBoard(); updateStatus();
             if (game.game_over()) {
-                if (game.in_checkmate()) {
-                    const winner = game.turn() === 'w' ? "Black" : "White";
-                    alert(`CHECKMATE! ${winner} Wins!`);
-                    await addPoints(50);
-                } else {
-                    alert("DRAW / STALEMATE!");
-                    await addPoints(25);
-                }
+                let reward = game.in_checkmate() ? 50 : 25;
+                alert("Game Over! Reward: " + reward + " Stars");
+                await addPoints(reward);
+                goHome();
             }
         } else {
-            const piece = game.get(pos);
-            if (piece && piece.color === game.turn()) {
-                selectedSquare = pos;
-                renderBoard();
-            }
+            const p = game.get(pos);
+            if (p && p.color === game.turn()) { selectedSquare = pos; renderBoard(); }
         }
     }
 
     function updateStatus() {
-        const turn = game.turn() === 'w' ? "WHITE" : "BLACK";
-        document.getElementById('chess-kibo-status').textContent = game.in_check() ? `${turn} IN CHECK!` : `${turn}'S TURN`;
+        const t = game.turn() === 'w' ? "WHITE" : "BLACK";
+        document.getElementById('chess-kibo-status').textContent = game.in_check() ? `${t} IN CHECK!` : `${t}'S TURN`;
     }
-
     document.getElementById('chess-kibo-reset').onclick = initChess;
 
-    /* --- TIC TAC TOE --- */
-    let tttBoard = Array(9).fill(null);
-    let tttActive = true;
-    let tttPlayer = 'X';
+    /* --- QUIZ SYSTEM --- */
+    const quizData = {
+        English: [
+            {q:"Synonym of 'Happy'?", a:"Joyful", c:["Sad","Joyful","Angry","Tired"]},
+            {q:"Antonym of 'Hot'?", a:"Cold", c:["Warm","Cold","Burning","Dry"]},
+            {q:"Who wrote 'Hamlet'?", a:"Shakespeare", c:["Dickens","Shakespeare","Twain","Austen"]},
+            {q:"A person who writes books?", a:"Author", c:["Doctor","Author","Pilot","Baker"]},
+            {q:"Plural of 'Child'?", a:"Children", c:["Childs","Childrens","Children","Kids"]},
+            {q:"Past tense of 'Eat'?", a:"Ate", c:["Eaten","Ate","Eats","Eating"]},
+            {q:"Meaning of 'Brevity'?", a:"Shortness", c:["Length","Shortness","Strength","Speed"]},
+            {q:"Identify the Noun: 'Run fast Kibo'.", a:"Kibo", c:["Run","Fast","Kibo","None"]},
+            {q:"A word that describes a verb?", a:"Adverb", c:["Noun","Adjective","Adverb","Pronoun"]},
+            {q:"What is a 'Stanza'?", a:"Poem section", c:["Music note","Poem section","Type of car","Food"]},
+            {q:"Synonym of 'Large'?", a:"Huge", c:["Small","Huge","Tiny","Thin"]},
+            {q:"Antonym of 'Fast'?", a:"Slow", c:["Quick","Rapid","Slow","Swift"]},
+            {q:"Who is the creator of Sherlock Holmes?", a:"Conan Doyle", c:["Agatha Christie","Conan Doyle","Poe","King"]},
+            {q:"'She ____ to school every day.'", a:"goes", c:["go","goes","going","gone"]},
+            {q:"The 'Subject' of a sentence is...?", a:"Who/What", c:["The action","Who/What","The place","The time"]},
+            {q:"What is an 'Anagram'?", a:"Rearranged letters", c:["A synonym","A rhyme","Rearranged letters","A joke"]},
+            {q:"Synonym of 'Begin'?", a:"Start", c:["End","Start","Pause","Stop"]},
+            {q:"A story with talking animals?", a:"Fable", c:["Essay","Fable","News","Manual"]},
+            {q:"Correct spelling?", a:"Necessary", c:["Necesary","Necessary","Neccessary","Nicesary"]},
+            {q:"Opposite of 'Success'?", a:"Failure", c:["Win","Goal","Failure","Luck"]},
+            {q:"'To cry wolf' means?", a:"False alarm", c:["Hunt","False alarm","Be brave","Eat meat"]},
+            {q:"Identify the Adjective: 'Blue sky'.", a:"Blue", c:["Blue","Sky","The","Is"]},
+            {q:"A book of maps is an...?", a:"Atlas", c:["Atlas","Dictionary","Novel","Diary"]},
+            {q:"Smallest unit of sound?", a:"Phoneme", c:["Word","Phoneme","Letter","Sentence"]},
+            {q:"A word that sounds like another?", a:"Homophone", c:["Synonym","Homophone","Antonym","Verb"]}
+        ],
+        Math: [
+            {q:"5 + 7?", a:"12", c:["11","12","13","14"]},
+            {q:"12 x 3?", a:"36", c:["30","36","40","42"]},
+            {q:"Square root of 64?", a:"8", c:["6","7","8","9"]},
+            {q:"100 / 4?", a:"25", c:["20","25","30","35"]},
+            {q:"15 - 8?", a:"7", c:["6","7","8","9"]},
+            {q:"9 squared?", a:"81", c:["18","72","81","90"]},
+            {q:"What is 10% of 200?", a:"20", c:["10","20","30","40"]},
+            {q:"Value of Pi (2 decimals)?", a:"3.14", c:["3.12","3.14","3.16","3.18"]},
+            {q:"Next in sequence: 2, 4, 6...?", a:"8", c:["7","8","9","10"]},
+            {q:"How many sides in a Hexagon?", a:"6", c:["5","6","7","8"]},
+            {q:"50 x 2 + 10?", a:"110", c:["100","110","120","60"]},
+            {q:"Half of 90?", a:"45", c:["40","45","50","55"]},
+            {q:"3 + 3 x 3?", a:"12", c:["18","12","9","15"]},
+            {q:"1/4 as a decimal?", a:"0.25", c:["0.50","0.25","0.75","0.10"]},
+            {q:"Seconds in 2 minutes?", a:"120", c:["60","100","120","140"]},
+            {q:"10 x 10 x 0?", a:"0", c:["10","100","0","1"]},
+            {q:"A right angle is ___ degrees?", a:"90", c:["45","90","180","360"]},
+            {q:"Is 7 a prime number?", a:"Yes", c:["Yes","No","Maybe","Only on Tuesdays"]},
+            {q:"8 + 8 / 2?", a:"12", c:["8","12","16","4"]},
+            {q:"Roman numeral for 10?", a:"X", c:["V","X","L","C"]},
+            {q:"Side of square with area 49?", a:"7", c:["6","7","8","9"]},
+            {q:"13 + 27?", a:"40", c:["30","40","50","45"]},
+            {q:"2 to the power of 3?", a:"8", c:["4","6","8","10"]},
+            {q:"30 / 5 + 4?", a:"10", c:["10","9","11","6"]},
+            {q:"0.5 + 0.5?", a:"1", c:["1","2","0.10","0.55"]}
+        ],
+        History: [
+            {q:"First man on the moon?", a:"Neil Armstrong", c:["Buzz Aldrin","Neil Armstrong","Yuri Gagarin","Elon Musk"]},
+            {q:"Who discovered America?", a:"Columbus", c:["Vespucci","Columbus","Cook","Magellan"]},
+            {q:"Year WWI started?", a:"1914", c:["1912","1914","1939","1945"]},
+            {q:"Ancient Egyptian kings?", a:"Pharaohs", c:["Knights","Pharaohs","Emperors","Czars"]},
+            {q:"Country of the Samurai?", a:"Japan", c:["China","Japan","Korea","Thailand"]},
+            {q:"Who was the 'Iron Lady'?", a:"Margaret Thatcher", c:["Queen Elizabeth","Margaret Thatcher","Angela Merkel","Diana"]},
+            {q:"Year of the Titanic sink?", a:"1912", c:["1910","1912","1914","1920"]},
+            {q:"Inventor of Lightbulb?", a:"Edison", c:["Tesla","Edison","Ford","Bell"]},
+            {q:"Leader of Nazi Germany?", a:"Hitler", c:["Stalin","Mussolini","Hitler","Churchill"]},
+            {q:"First President of USA?", a:"Washington", c:["Lincoln","Washington","Jefferson","Adams"]},
+            {q:"Which empire built the Colosseum?", a:"Roman", c:["Greek","Roman","Persian","Aztec"]},
+            {q:"Who wrote the US Declaration?", a:"Jefferson", c:["Washington","Jefferson","Franklin","Hamilton"]},
+            {q:"City destroyed by Vesuvius?", a:"Pompeii", c:["Rome","Pompeii","Athens","Sparta"]},
+            {q:"Where did Democracy start?", a:"Greece", c:["Rome","Greece","Egypt","France"]},
+            {q:"The Great Wall is in...?", a:"China", c:["Japan","India","China","Mongolia"]},
+            {q:"Who was the French Queen executed?", a:"Marie Antoinette", c:["Joan of Arc","Marie Antoinette","Catherine","Mary"]},
+            {q:"Civil War: North vs ____?", a:"South", c:["East","West","South","Britain"]},
+            {q:"Industrial Revolution started in?", a:"Britain", c:["USA","Germany","Britain","France"]},
+            {q:"Who was 'The Maid of Orleans'?", a:"Joan of Arc", c:["Mary Magdalene","Joan of Arc","Queen Mary","Elizabeth"]},
+            {q:"End of WWII year?", a:"1945", c:["1944","1945","1946","1950"]},
+            {q:"Aztec Empire location?", a:"Mexico", c:["Peru","Brazil","Mexico","Chile"]},
+            {q:"Who fought in the Crusades?", a:"Knights", c:["Pirates","Knights","Ninjas","Cowboys"]},
+            {q:"The 'Black Death' was a...?", a:"Plague", c:["War","Plague","Storm","Famine"]},
+            {q:"Apartheid ended in which country?", a:"South Africa", c:["USA","South Africa","India","Kenya"]},
+            {q:"Who was the first female pilot?", a:"Amelia Earhart", c:["Rosa Parks","Amelia Earhart","Sally Ride","Marie Curie"]}
+        ],
+        Science: [
+            {q:"Planet known as Red Planet?", a:"Mars", c:["Venus","Mars","Jupiter","Saturn"]},
+            {q:"Gas humans breathe out?", a:"Carbon Dioxide", c:["Oxygen","Nitrogen","Carbon Dioxide","Helium"]},
+            {q:"Hardest natural substance?", a:"Diamond", c:["Gold","Iron","Diamond","Steel"]},
+            {q:"Study of living things?", a:"Biology", c:["Physics","Geology","Biology","Chemistry"]},
+            {q:"Center of an atom?", a:"Nucleus", c:["Electron","Proton","Nucleus","Neutron"]},
+            {q:"Largest organ in the body?", a:"Skin", c:["Liver","Heart","Skin","Lungs"]},
+            {q:"Water freezes at ___ Celsius?", a:"0", c:["0","32","100","-1"]},
+            {q:"Star at the center of Solar System?", a:"Sun", c:["Moon","Sun","Polaris","Mars"]},
+            {q:"Force that keeps us on ground?", a:"Gravity", c:["Friction","Gravity","Magnetism","Speed"]},
+            {q:"H2O is...?", a:"Water", c:["Salt","Acid","Water","Gas"]},
+            {q:"How many legs does a spider have?", a:"8", c:["6","8","10","12"]},
+            {q:"Which vitamin comes from Sun?", a:"D", c:["A","B","C","D"]},
+            {q:"The 'Powerhouse' of the cell?", a:"Mitochondria", c:["Nucleus","Mitochondria","Ribosome","Wall"]},
+            {q:"What do bees collect?", a:"Nectar", c:["Honey","Nectar","Water","Dust"]},
+            {q:"Boiling point of water (C)?", a:"100", c:["90","100","110","200"]},
+            {q:"Closest planet to Sun?", a:"Mercury", c:["Venus","Earth","Mercury","Mars"]},
+            {q:"Earth's natural satellite?", a:"Moon", c:["Sun","Moon","Titan","Europa"]},
+            {q:"Gas used in balloons to float?", a:"Helium", c:["Oxygen","Helium","Nitrogen","Neon"]},
+            {q:"What part of plant does photosynthesis?", a:"Leaf", c:["Root","Stem","Leaf","Flower"]},
+            {q:"How many bones in adult body?", a:"206", c:["100","206","300","250"]},
+            {q:"Color of Chlorophyll?", a:"Green", c:["Red","Blue","Green","Yellow"]},
+            {q:"A scientist who studies rocks?", a:"Geologist", c:["Biologist","Geologist","Chemist","Physicist"]},
+            {q:"Lightest element?", a:"Hydrogen", c:["Oxygen","Hydrogen","Helium","Carbon"]},
+            {q:"Speed of Sound or Light faster?", a:"Light", c:["Sound","Light","Same","Neither"]},
+            {q:"Earth's shape?", a:"Sphere", c:["Flat","Square","Sphere","Triangle"]}
+        ],
+        General: [
+            {q:"Capital of France?", a:"Paris", c:["Lyon","Paris","Marseille","Nice"]},
+            {q:"Currency of Japan?", a:"Yen", c:["Dollar","Yuan","Yen","Euro"]},
+            {q:"Largest Ocean?", a:"Pacific", c:["Atlantic","Indian","Pacific","Arctic"]},
+            {q:"Primary colors: Red, Yellow, ____?", a:"Blue", c:["Green","Blue","Orange","Purple"]},
+            {q:"Color of Emerald?", a:"Green", c:["Red","Blue","Green","Yellow"]},
+            {q:"How many continents?", a:"7", c:["5","6","7","8"]},
+            {q:"The Eiffel Tower is in...?", a:"Paris", c:["London","Paris","Berlin","Rome"]},
+            {q:"Tallest animal?", a:"Giraffe", c:["Elephant","Giraffe","Lion","Whale"]},
+            {q:"Fruit used to make wine?", a:"Grapes", c:["Apples","Grapes","Berries","Plums"]},
+            {q:"Opposite of North?", a:"South", c:["East","West","South","North-West"]},
+            {q:"Standard piano keys?", a:"88", c:["76","88","92","100"]},
+            {q:"Who painted Mona Lisa?", a:"Da Vinci", c:["Picasso","Da Vinci","Van Gogh","Dali"]},
+            {q:"Olympic Games frequency?", a:"4 years", c:["2 years","4 years","5 years","1 year"]},
+            {q:"Baby cat name?", a:"Kitten", c:["Puppy","Kitten","Cub","Calf"]},
+            {q:"Language of Brazil?", a:"Portuguese", c:["Spanish","Portuguese","French","English"]},
+            {q:"Country of the Taj Mahal?", a:"India", c:["Pakistan","India","China","Iran"]},
+            {q:"Biggest planet?", a:"Jupiter", c:["Mars","Saturn","Jupiter","Earth"]},
+            {q:"Rainbow colors count?", a:"7", c:["5","6","7","8"]},
+            {q:"Which month has 28 days?", a:"February", c:["January","February","March","All of them"]},
+            {q:"A 'Baker's Dozen' is how many?", a:"13", c:["12","13","14","15"]},
+            {q:"The Statute of Liberty was a gift from?", a:"France", c:["UK","Germany","France","Italy"]},
+            {q:"Musical with a phantom?", a:"Phantom of the Opera", c:["Cats","Phantom of the Opera","Hamilton","Wicked"]},
+            {q:"Vatican City is inside which city?", a:"Rome", c:["Paris","Rome","Madrid","Athens"]},
+            {q:"King of Pop?", a:"Michael Jackson", c:["Elvis","Michael Jackson","Prince","Bowie"]},
+            {q:"Smallest country?", a:"Vatican City", c:["Monaco","Vatican City","Malta","Iceland"]}
+        ]
+    };
 
-    function initTTT() {
-        const grid = document.getElementById('ttt-board');
-        grid.innerHTML = '';
-        tttBoard = Array(9).fill(null);
-        tttActive = true;
-        tttPlayer = 'X';
-        document.getElementById('ttt-status').textContent = "Turn: X";
-        for (let i = 0; i < 9; i++) {
-            const cell = document.createElement('div');
-            cell.className = 'ttt-cell';
-            cell.onclick = () => clickTTT(i, cell);
-            grid.appendChild(cell);
-        }
+    let qCurrentSub = '', qIndex = 0, qScore = 0, qTimer, qTimeLeft = 60;
+
+    window.startQuiz = (subject) => {
+        qCurrentSub = subject;
+        qIndex = 0; qScore = 0; qTimeLeft = 120;
+        document.getElementById('quiz-sub-title').textContent = subject;
+        showScreen('quiz-screen');
+        renderQuestion();
+        qTimer = setInterval(() => {
+            qTimeLeft--;
+            let m = Math.floor(qTimeLeft/60), s = qTimeLeft%60;
+            document.getElementById('quiz-timer').textContent = `${m}:${s<10?'0':''}${s}`;
+            if(qTimeLeft <= 0) quizEnd();
+        }, 1000);
+    };
+
+    function renderQuestion() {
+        const q = quizData[qCurrentSub][qIndex];
+        document.getElementById('quiz-question').textContent = q.q;
+        document.getElementById('quiz-score').textContent = qScore;
+        const container = document.getElementById('quiz-interaction');
+        container.innerHTML = '';
+        const box = document.createElement('div');
+        box.className = 'choices';
+        q.c.forEach(choice => {
+            const btn = document.createElement('button');
+            btn.className = 'choice-btn';
+            btn.textContent = choice;
+            btn.onclick = () => {
+                if(choice === q.a) qScore++;
+                qIndex++;
+                if(qIndex < 25) renderQuestion(); else quizEnd();
+            };
+            box.appendChild(btn);
+        });
+        container.appendChild(box);
     }
 
-    async function clickTTT(i, cell) {
-        if (!tttActive || tttBoard[i]) return;
-        tttBoard[i] = tttPlayer;
-        cell.textContent = tttPlayer;
-        if (checkTTTWin()) {
-            document.getElementById('ttt-status').textContent = tttPlayer + " WINS!";
-            tttActive = false;
-            await addPoints(10);
-            return;
-        }
-        if (!tttBoard.includes(null)) {
-            document.getElementById('ttt-status').textContent = "DRAW!";
-            tttActive = false;
-            return;
-        }
-        tttPlayer = tttPlayer === 'X' ? 'O' : 'X';
-        document.getElementById('ttt-status').textContent = "Turn: " + tttPlayer;
+    async function quizEnd() {
+        clearInterval(qTimer);
+        alert(`Quiz Finished! Score: ${qScore}. Reward: ${qScore * 2} Stars.`);
+        await addPoints(qScore * 2);
+        goHome();
     }
 
-    function checkTTTWin() {
-        const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-        return wins.some(comb => comb.every(idx => tttBoard[idx] === tttPlayer));
+    /* --- BONE RUSH (150 WORDS) --- */
+    const boneWords = [
+        "APPLE","BANANA","CHERRY","DRAGON","EAGLE","FOREST","GHOST","HUNTER","ISLAND","JUNGLE","KIBO","LEMON","MOUNTAIN","NIGHT","OCEAN","PIZZA","QUEEN","RIVER","STORM","TIGER",
+        "UNDER","VALLEY","WITCH","XRAY","YACHT","ZEBRA","ARCADIA","BRAVERY","CRYSTAL","DESTINY","ENERGY","FLOWER","GARDEN","HARBOR","INDIGO","JOURNEY","KNIGHT","LANTERN","MIRROR","NEBULA",
+        "ORBIT","PIRATE","QUARTZ","ROCKET","SILVER","TEMPLE","UTOPIA","VORTEX","WIZARD","XENON","YELLOW","ZENITH","ANCIENT","BLOSSOM","CANYON","DESERT","EMERALD","FALCON","GLACIER","HORIZON",
+        "ICEBERG","JAVELIN","KINDLE","LAGOON","MAGMA","NOMAD","OASIS","PHANTOM","QUIVER","RADIANT","SPHERE","THUNDER","UMBRA","VELVET","WHISPER","XYLOPHONE","YONDER","ZEPHYR","ALGORITHM","BLIZZARD",
+        "CELESTIAL","DIAMOND","ECLIPSE","FIREWORKS","GALAXY","HOLOGRAM","INFINITY","JUPITER","KINETIC","LABYRINTH","MYSTERY","NEPTUNE","OVERLORD","PARADOX","QUANTUM","RENAISSANCE","SPECTRUM","TRIUMPH","UNIVERSE","VELOCITY",
+        "WILDERNESS","XENOPHOBE","YESTERDAY","ZODIAC","ABANDON","BARRICADE","CARNIVAL","DYNAMITE","ETERNITY","FEATHER","GRAVITY","HARMONY","ILLUSION","JUSTICE","KINGDOM","LIBERTY","MAJESTY","NIRVANA","OPULENCE","PANDORA",
+        "QUEST","REBELLION","SERENITY","TREASURE","UPRISING","VICTORY","WARRIOR","XENOPHILE","YOUTH","ZEALOT","ASTRONAUT","BIOSPHERE","CHRONICLE","DIMENSION","EXPLORER","FRAGMENT","GUARDIAN","HERITAGE","ISOLATION","JUDGMENT",
+        "KNOWLEDGE","LEGACY","METEOR","NOSTALGIA","OBSIDIAN","PROPHESY","QUARANTINE","REFLECTION","SURVIVOR","TWILIGHT"
+    ];
+
+    let bScore = 0, bTime = 60, bTimer, bActive = false;
+    document.getElementById('bone-start').onclick = () => {
+        if(bActive) return;
+        bActive = true; bScore = 0; bTime = 60;
+        document.getElementById('bone-score').textContent = "0";
+        nextBoneWord();
+        bTimer = setInterval(() => {
+            bTime--;
+            document.getElementById('bone-timer').textContent = bTime;
+            if(bTime <= 0) {
+                clearInterval(bTimer); bActive = false;
+                addPoints(bScore); alert("Time's Up! Earned " + bScore + " Stars.");
+                goHome();
+            }
+        }, 1000);
+    };
+
+    function nextBoneWord() {
+        document.getElementById('bone-word').textContent = boneWords[Math.floor(Math.random()*boneWords.length)];
+        document.getElementById('bone-input').value = '';
+        document.getElementById('bone-input').focus();
     }
 
-    document.getElementById('reset-ttt').onclick = initTTT;
-    initTTT();
+    document.getElementById('bone-input').oninput = (e) => {
+        if(!bActive) return;
+        if(e.target.value.toUpperCase() === document.getElementById('bone-word').textContent) {
+            bScore++; document.getElementById('bone-score').textContent = bScore;
+            nextBoneWord();
+        }
+    };
 
-    /* --- MATCH-KIBO GAME --- */
-    let matchIcons = ['🍎', '🍎', '⭐', '⭐', '🎮', '🎮', '🚀', '🚀', '🔥', '🔥', '💎', '💎', '👻', '👻', '🍀', '🍀', '🍄', '🍄', '🌍', '🌍'];
-    let flipped = [], matchCount = 0, matchTime = 120, matchActive = false, matchTimer;
+    /* --- MATCH-KIBO --- */
+    let matchIcons = ['🍎','🍎','⭐','⭐','🎮','🎮','🚀','🚀','🔥','🔥','💎','💎','👻','👻','🍀','🍀','🍄','🍄','🌍','🌍'];
+    let flipped = [], matchCount = 0, matchTime = 120, matchTimer, matchActive = false;
 
-    function initMatch() {
-        const grid = document.getElementById('match-grid');
-        grid.innerHTML = '';
+    document.getElementById('match-start').onclick = () => {
+        if(matchActive) return;
+        matchActive = true; matchTime = 120; matchCount = 0;
+        initMatchGrid();
+        matchTimer = setInterval(() => {
+            matchTime--; document.getElementById('match-timer').textContent = matchTime;
+            if(matchTime <= 0) { clearInterval(matchTimer); matchActive = false; alert("Game Over!"); goHome(); }
+        }, 1000);
+    };
+
+    function initMatchGrid() {
+        const grid = document.getElementById('match-grid'); grid.innerHTML = '';
         matchIcons.sort(() => Math.random() - 0.5);
-        matchIcons.forEach((icon, i) => {
+        matchIcons.forEach(icon => {
             const card = document.createElement('div');
-            card.className = 'match-card';
-            card.dataset.icon = icon;
-            card.dataset.index = i;
-            card.textContent = icon;
-            card.onclick = () => flipMatch(card);
+            card.className = 'match-card'; card.textContent = icon;
+            card.onclick = () => {
+                if(!matchActive || flipped.length >= 2 || card.classList.contains('flipped')) return;
+                card.classList.add('flipped'); flipped.push(card);
+                if(flipped.length === 2) {
+                    if(flipped[0].textContent === flipped[1].textContent) {
+                        flipped.forEach(c => c.classList.add('matched')); flipped = [];
+                        matchCount++; document.getElementById('match-count').textContent = matchCount;
+                        if(matchCount === 10) { addPoints(20); alert("Cleared! +20 Stars"); goHome(); }
+                    } else {
+                        setTimeout(() => { flipped.forEach(c => c.classList.remove('flipped')); flipped = []; }, 600);
+                    }
+                }
+            };
             grid.appendChild(card);
         });
     }
 
-    function flipMatch(card) {
-        if (!matchActive || flipped.length >= 2 || card.classList.contains('flipped') || card.classList.contains('matched')) return;
-        card.classList.add('flipped');
-        flipped.push(card);
-        if (flipped.length === 2) {
-            if (flipped[0].dataset.icon === flipped[1].dataset.icon) {
-                flipped.forEach(c => c.classList.add('matched'));
-                flipped = [];
-                matchCount++;
-                document.getElementById('match-count').textContent = matchCount;
-                if (matchCount === 10) {
-                    addPoints(10);
-                    alert("Board Cleared! +10 Points");
-                    matchCount = 0;
-                    document.getElementById('match-count').textContent = "0";
-                    initMatch();
-                }
-            } else {
-                setTimeout(() => {
-                    flipped.forEach(c => c.classList.remove('flipped'));
-                    flipped = [];
-                }, 700);
-            }
-        }
-    }
-
-    document.getElementById('match-start').onclick = () => {
-        if (matchActive) return;
-        matchActive = true; matchTime = 120; matchCount = 0;
-        initMatch();
-        matchTimer = setInterval(() => {
-            matchTime--;
-            document.getElementById('match-timer').textContent = matchTime;
-            if (matchTime <= 0) {
-                clearInterval(matchTimer);
-                matchActive = false;
-                alert("Game Over!");
-            }
-        }, 1000);
-    };
-
-    /* --- STAR CLICKER GAME --- */
-    let clickScore = 0, clickTime = 30, clickActive = false, clickTimer;
-    const star = document.getElementById('target-star');
-    const area = document.getElementById('clicker-area');
-
-    function moveStar() {
-        const x = Math.random() * (area.clientWidth - 40);
-        const y = Math.random() * (area.clientHeight - 40);
-        star.style.left = x + 'px';
-        star.style.top = y + 'px';
-    }
-
-    star.onclick = () => {
-        if (!clickActive) return;
-        clickScore++;
-        document.getElementById('clicker-score').textContent = clickScore;
-        moveStar();
-    };
-
+    /* --- STAR CLICKER --- */
+    let clickScore = 0, clickTime = 30, clickTimer, clickActive = false;
     document.getElementById('clicker-start').onclick = () => {
-        if (clickActive) return;
+        if(clickActive) return;
         clickActive = true; clickScore = 0; clickTime = 30;
-        document.getElementById('clicker-score').textContent = "0";
-        star.style.display = 'block';
+        document.getElementById('target-star').style.display = 'block';
         moveStar();
         clickTimer = setInterval(() => {
-            clickTime--;
-            document.getElementById('clicker-timer').textContent = clickTime;
-            if (clickTime <= 0) {
-                clearInterval(clickTimer);
-                clickActive = false;
-                star.style.display = 'none';
-                addPoints(Math.floor(clickScore / 2));
-                alert("Time up! Earned " + Math.floor(clickScore / 2) + " stars.");
+            clickTime--; document.getElementById('clicker-timer').textContent = clickTime;
+            if(clickTime <= 0) {
+                clearInterval(clickTimer); clickActive = false;
+                document.getElementById('target-star').style.display = 'none';
+                addPoints(clickScore); alert("Done! Earned " + clickScore + " Stars.");
+                goHome();
             }
         }, 1000);
     };
+
+    function moveStar() {
+        const area = document.getElementById('clicker-area');
+        const star = document.getElementById('target-star');
+        star.style.left = Math.random() * (area.clientWidth - 40) + 'px';
+        star.style.top = Math.random() * (area.clientHeight - 40) + 'px';
+    }
+    document.getElementById('target-star').onclick = () => { clickScore++; document.getElementById('clicker-score').textContent = clickScore; moveStar(); };
+
+    /* --- TIC TAC TOE --- */
+    let tttBoard = Array(9).fill(null), tttPlayer = 'X';
+    function initTTT() {
+        const grid = document.getElementById('ttt-board'); grid.innerHTML = '';
+        tttBoard = Array(9).fill(null); tttPlayer = 'X';
+        for (let i = 0; i < 9; i++) {
+            const cell = document.createElement('div'); cell.className = 'ttt-cell';
+            cell.onclick = () => {
+                if(tttBoard[i]) return;
+                tttBoard[i] = tttPlayer; cell.textContent = tttPlayer;
+                if(checkTTT()) { alert(tttPlayer + " Wins!"); addPoints(10); initTTT(); }
+                else if(!tttBoard.includes(null)) { alert("Draw!"); initTTT(); }
+                else { tttPlayer = tttPlayer === 'X' ? 'O' : 'X'; document.getElementById('ttt-status').textContent = "Turn: " + tttPlayer; }
+            };
+            grid.appendChild(cell);
+        }
+    }
+    function checkTTT() {
+        const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+        return wins.some(c => tttBoard[c[0]] && tttBoard[c[0]] === tttBoard[c[1]] && tttBoard[c[0]] === tttBoard[c[2]]);
+    }
+    document.getElementById('reset-ttt').onclick = initTTT;
+    initTTT();
 
     /* --- LEADERBOARD --- */
     function loadLeaderboard() {
-        const usersRef = ref(db, 'users');
-        onValue(usersRef, (snapshot) => {
-            const data = snapshot.val();
-            const list = [];
-            for (let id in data) list.push(data[id]);
-            list.sort((a, b) => (b.points || 0) - (a.points || 0));
-            const tbody = document.getElementById('lb-body');
-            tbody.innerHTML = '';
-            list.forEach((user, index) => {
+        onValue(ref(db, 'users'), (snap) => {
+            const data = snap.val();
+            const list = Object.values(data || {}).sort((a,b) => (b.points||0) - (a.points||0));
+            const tbody = document.getElementById('lb-body'); tbody.innerHTML = '';
+            list.forEach((u, i) => {
                 const tr = document.createElement('tr');
-                if(user.username === currentUser) tr.className = 'my-row';
-                tr.innerHTML = `<td>${index + 1}</td><td>${user.username || 'Anon'}</td><td>${user.points || 0}</td>`;
+                if(u.username === currentUser) tr.className = 'my-row';
+                tr.innerHTML = `<td>${i+1}</td><td>${u.username}</td><td>${u.points||0}</td>`;
                 tbody.appendChild(tr);
             });
         });
     }
 
-    /* --- QUIZ LOGIC --- */
-    const quizQuestions = [
-      {q:"What is the capital city of Japan?", a:"Tokyo", choices:["Kyoto","Tokyo","Osaka","Hiroshima"]},
-      {q:"Who painted the Mona Lisa?", a:"Leonardo da Vinci", choices:["Pablo Picasso","Leonardo da Vinci","Vincent van Gogh","Claude Monet"]},
-      {q:"What is the chemical symbol for water?", a:"H2O", choices:["CO2","H2O","O2","NaCl"]}
-    ];
-
-    let qIndex = 0, qCorrect = 0, qTime = 300, qStarted = false, qMode = 'type', qTimer;
-
-    function startQuiz() {
-      qStarted = true; qIndex = 0; qCorrect = 0; qTime = 300;
-      renderQ();
-      qTimer = setInterval(() => {
-        qTime--;
-        const m = Math.floor(qTime/60), s = qTime%60;
-        document.getElementById('quiz-timer').textContent = `${m}:${s<10?'0':''}${s}`;
-        if(qTime<=0) { clearInterval(qTimer); alert("Time's up!"); showScreen('menu'); }
-      }, 1000);
+    /* --- INIT APP --- */
+    let stored = localStorage.getItem('arkibo_user');
+    if (stored) {
+        currentUser = cleanFirebasePath(stored);
+        loadUserData();
+        showScreen('menu');
     }
-
-    function renderQ() {
-      const q = quizQuestions[qIndex];
-      document.getElementById('quiz-question').textContent = q.q;
-      const area = document.getElementById('quiz-interaction');
-      area.innerHTML = '';
-      if(qMode === 'type') {
-        const inp = document.createElement('input');
-        inp.type = 'text'; inp.className = 'answer-typed';
-        inp.onchange = () => { if(inp.value.toLowerCase() === q.a.toLowerCase()) { qCorrect++; updateQuizScore(); } nextQ(); };
-        area.appendChild(inp);
-      } else {
-        const box = document.createElement('div');
-        box.className = 'choices';
-        q.choices.forEach(c => {
-          const b = document.createElement('button');
-          b.className = 'choice-btn'; b.textContent = c;
-          b.onclick = () => { if(c === q.a) qCorrect++; updateQuizScore(); nextQ(); };
-          box.appendChild(b);
-        });
-        area.appendChild(box);
-      }
-    }
-
-    function updateQuizScore() { document.getElementById('quiz-score').textContent = `${qCorrect} / ${quizQuestions.length}`; }
-    function nextQ() { 
-        qIndex++; 
-        if(qIndex < quizQuestions.length) renderQ(); 
-        else { 
-            clearInterval(qTimer); 
-            addPoints(qCorrect * 5);
-            alert(`Quiz Done! Score: ${qCorrect}. Earned ${qCorrect*5} Stars.`); 
-            showScreen('menu'); 
-        } 
-    }
-
-    document.getElementById('quiz-start').onclick = startQuiz;
-
-    /* --- BONE RUSH --- */
-    const words = ["KIBO", "ARCADE", "CHESS", "CODING", "STARS", "BONE", "SMART", "ADVENTURE"];
-    let bScore = 0, bTime = 60, bActive = false, bTimer;
-    
-    function startBone() {
-      bActive = true; bScore = 0; bTime = 60;
-      document.getElementById('bone-score').textContent = "0";
-      nextWord();
-      bTimer = setInterval(() => {
-        bTime--;
-        document.getElementById('bone-timer').textContent = bTime;
-        if(bTime <= 0) { 
-          clearInterval(bTimer); bActive = false; 
-          addPoints(bScore);
-          alert("Time's up! Earned " + bScore + " Stars."); 
-        }
-      }, 1000);
-    }
-
-    function nextWord() {
-      const w = words[Math.floor(Math.random()*words.length)];
-      document.getElementById('bone-word').textContent = w;
-      document.getElementById('bone-input').value = '';
-    }
-
-    document.getElementById('bone-input').oninput = (e) => {
-      if(!bActive) return;
-      if(e.target.value.toUpperCase() === document.getElementById('bone-word').textContent) {
-        bScore++; document.getElementById('bone-score').textContent = bScore;
-        nextWord();
-      }
-    };
-    document.getElementById('bone-start').onclick = startBone;
-
-    initAuth();
   </script>
 </body>
 </html>
