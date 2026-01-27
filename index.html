@@ -13,6 +13,8 @@
       --green-2: #81c784;
       --accent: #cfe9d3;
       --card: #ffffff;
+      --chess-light: #f0d9b5;
+      --chess-dark: #b58863;
     }
 
     * {box-sizing: border-box;}
@@ -153,6 +155,38 @@
       cursor:pointer;
     }
 
+    /* Chess Styles */
+    #chess-board {
+      display: grid;
+      grid-template-columns: repeat(8, 1fr);
+      width: 100%;
+      aspect-ratio: 1/1;
+      border: 4px solid var(--green-1);
+      border-radius: 4px;
+      margin-top: 10px;
+      touch-action: none;
+    }
+    .chess-square {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 30px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .chess-square.light { background: var(--chess-light); }
+    .chess-square.dark { background: var(--chess-dark); }
+    .chess-square.selected { background: #f7e365 !important; }
+    .chess-square.valid-move::after {
+      content: '';
+      width: 12px;
+      height: 12px;
+      background: rgba(0,0,0,0.2);
+      border-radius: 50%;
+    }
+
     /* Tic Tac Toe */
     .ttt-board {
       display:grid;
@@ -221,40 +255,6 @@
       transition: transform 0.1s;
     }
 
-    /* Jump Kibo Styles */
-    #jump-area {
-      width: 100%;
-      height: 200px;
-      background: #e8f5e9;
-      border-bottom: 4px solid var(--green-1);
-      position: relative;
-      margin-top: 10px;
-      border-radius: 12px 12px 0 0;
-      overflow: hidden;
-      cursor: pointer;
-    }
-    #kibo-player {
-      width: 40px;
-      height: 40px;
-      background: #4caf50;
-      border-radius: 8px;
-      position: absolute;
-      bottom: 0;
-      left: 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-    }
-    .obstacle {
-      width: 25px;
-      height: 40px;
-      background: #d32f2f;
-      position: absolute;
-      bottom: 0;
-      border-radius: 4px 4px 0 0;
-    }
-
     /* Leaderboard Table */
     .lb-table {
       width: 100%;
@@ -300,9 +300,9 @@
       </div>
 
       <div class="menu-buttons" style="max-height: 350px; overflow-y: auto;">
-        <button class="btn" id="to-jump">JUMP KIBO</button>
+        <button class="btn" id="to-chess-kibo">KIBO-CHESS</button>
         <button class="btn" id="to-quiz">QUIZME</button>
-        <button class="btn" id="to-chess">TIC-TAC-KIBO</button>
+        <button class="btn" id="to-ttt">TIC-TAC-KIBO</button>
         <button class="btn" id="to-bone">KIBO BONE RUSH</button>
         <button class="btn" id="to-match">MATCH-KIBO</button>
         <button class="btn" id="to-clicker">STAR CLICKER</button>
@@ -311,19 +311,17 @@
       </div>
     </div>
 
-    <div id="jump-screen" class="screen">
+    <div id="chess-kibo-screen" class="screen">
         <div class="top-row">
-            <h2 style="margin:0">JUMP KIBO</h2>
-            <button class="small-btn ghost" id="jump-home">MENU</button>
+            <h2 style="margin:0">KIBO-CHESS</h2>
+            <button class="small-btn ghost" id="chess-kibo-home">MENU</button>
         </div>
         <div class="quiz-card">
-            <div class="center small">SCORE: <span id="jump-score">0</span> | SPEED: <span id="jump-speed-lvl">1</span></div>
-            <div id="jump-area">
-                <div id="kibo-player">🐶</div>
-            </div>
-            <p class="center small" style="margin-top:5px;">Tap area or press Space to Jump!</p>
+            <div class="center small" id="chess-kibo-status">WHITE'S TURN</div>
+            <div id="chess-board"></div>
+            <p class="center small" style="margin-top:10px;">Win: 50⭐ | Draw: 25⭐</p>
             <div class="center" style="margin-top:10px;">
-                <button class="small-btn" id="jump-start">START RUNNING</button>
+                <button class="small-btn" id="chess-kibo-reset">RESET GAME</button>
             </div>
         </div>
     </div>
@@ -407,16 +405,16 @@
       </div>
     </div>
 
-    <div id="chess-screen" class="screen">
+    <div id="ttt-screen" class="screen">
       <div class="top-row">
         <img src="https://i.imgur.com/3npgp4h.png" class="icon-large" />
         <h2 style="margin:0">TIC-TAC-KIBO</h2>
-        <button class="small-btn" id="chess-home">MENU</button>
+        <button class="small-btn" id="ttt-home">MENU</button>
       </div>
       <div class="ttt-board" id="ttt-board"></div>
       <div class="center">
-        <div class="small" id="chess-status">Turn: X</div>
-        <button class="small-btn" id="reset-chess" style="margin-top:10px">RESET</button>
+        <div class="small" id="ttt-status">Turn: X</div>
+        <button class="small-btn" id="reset-ttt" style="margin-top:10px">RESET</button>
       </div>
     </div>
 
@@ -440,6 +438,8 @@
     </div>
 
   </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
 
   <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/9.22.1/firebase-app.js";
@@ -526,119 +526,159 @@
     }
 
     /* --- NAVIGATION --- */
-    const screens = ['menu', 'quiz-screen', 'chess-screen', 'bone-screen', 'auth-screen', 'lb-screen', 'match-screen', 'clicker-screen', 'jump-screen'];
+    const screens = ['menu', 'quiz-screen', 'ttt-screen', 'bone-screen', 'auth-screen', 'lb-screen', 'match-screen', 'clicker-screen', 'chess-kibo-screen'];
     function showScreen(id) {
         screens.forEach(s => document.getElementById(s).style.display = 'none');
         document.getElementById(id).style.display = 'block';
         if(id === 'lb-screen') loadLeaderboard();
-        // Stop any running jump game if leaving
-        if(id !== 'jump-screen') stopJumpGame();
+        if(id === 'chess-kibo-screen') initChess();
     }
 
     document.getElementById('to-quiz').onclick = () => showScreen('quiz-screen');
-    document.getElementById('to-chess').onclick = () => showScreen('chess-screen');
+    document.getElementById('to-ttt').onclick = () => showScreen('ttt-screen');
     document.getElementById('to-bone').onclick = () => showScreen('bone-screen');
     document.getElementById('to-match').onclick = () => showScreen('match-screen');
     document.getElementById('to-clicker').onclick = () => showScreen('clicker-screen');
-    document.getElementById('to-jump').onclick = () => showScreen('jump-screen');
+    document.getElementById('to-chess-kibo').onclick = () => showScreen('chess-kibo-screen');
     document.getElementById('to-lb').onclick = () => showScreen('lb-screen');
     document.getElementById('lb-back').onclick = () => showScreen('menu');
     document.getElementById('quiz-back').onclick = () => showScreen('menu');
-    document.getElementById('chess-home').onclick = () => showScreen('menu');
+    document.getElementById('ttt-home').onclick = () => showScreen('menu');
     document.getElementById('bone-home').onclick = () => showScreen('menu');
     document.getElementById('match-home').onclick = () => showScreen('menu');
     document.getElementById('clicker-home').onclick = () => showScreen('menu');
-    document.getElementById('jump-home').onclick = () => showScreen('menu');
+    document.getElementById('chess-kibo-home').onclick = () => showScreen('menu');
 
-    /* --- JUMP KIBO GAME --- */
-    let jumpActive = false, jumpScore = 0, jumpSpeed = 5, jumpInterval;
-    const player = document.getElementById('kibo-player');
-    const jumpArea = document.getElementById('jump-area');
-    let isJumping = false;
+    /* --- KIBO-CHESS LOGIC --- */
+    let game = new Chess();
+    const boardEl = document.getElementById('chess-board');
+    let selectedSquare = null;
 
-    function handleJump() {
-        if (!jumpActive || isJumping) return;
-        isJumping = true;
-        let pos = 0;
-        let upInterval = setInterval(() => {
-            if (pos >= 100) {
-                clearInterval(upInterval);
-                let downInterval = setInterval(() => {
-                    if (pos <= 0) {
-                        clearInterval(downInterval);
-                        isJumping = false;
-                    }
-                    pos -= 5;
-                    player.style.bottom = pos + 'px';
-                }, 20);
-            }
-            pos += 5;
-            player.style.bottom = pos + 'px';
-        }, 20);
+    const pieceMap = {
+        'p': '♟', 'r': '♜', 'n': '♞', 'b': '♝', 'q': '♛', 'k': '♚',
+        'P': '♙', 'R': '♖', 'N': '♘', 'B': '♗', 'Q': '♕', 'K': '♔'
+    };
+
+    function initChess() {
+        game = new Chess();
+        selectedSquare = null;
+        renderBoard();
+        updateStatus();
     }
 
-    jumpArea.onclick = handleJump;
-    window.addEventListener('keydown', (e) => { if(e.code === 'Space') handleJump(); });
+    function renderBoard() {
+        boardEl.innerHTML = '';
+        const board = game.board();
+        for (let i = 0; i < 8; i++) {
+            for (let j = 0; j < 8; j++) {
+                const square = document.createElement('div');
+                const squareName = String.fromCharCode(97 + j) + (8 - i);
+                square.className = `chess-square ${(i + j) % 2 === 0 ? 'light' : 'dark'}`;
+                square.dataset.pos = squareName;
+                
+                const piece = board[i][j];
+                if (piece) {
+                    square.textContent = pieceMap[piece.color === 'w' ? piece.type.toUpperCase() : piece.type];
+                    square.style.color = piece.color === 'w' ? '#fff' : '#000';
+                    square.style.textShadow = piece.color === 'w' ? '0 0 2px #000' : 'none';
+                }
 
-    function createObstacle() {
-        if (!jumpActive) return;
-        const obs = document.createElement('div');
-        obs.className = 'obstacle';
-        obs.style.right = '-30px';
-        jumpArea.appendChild(obs);
+                if (selectedSquare === squareName) square.classList.add('selected');
 
-        let obsPos = -30;
-        let moveObs = setInterval(() => {
-            if (!jumpActive) { clearInterval(moveObs); obs.remove(); return; }
-            obsPos += jumpSpeed;
-            obs.style.right = obsPos + 'px';
-
-            // Collision Detection
-            const pRect = player.getBoundingClientRect();
-            const oRect = obs.getBoundingClientRect();
-
-            if (pRect.right > oRect.left && pRect.left < oRect.right && pRect.bottom > oRect.top) {
-                clearInterval(moveObs);
-                endJumpGame();
+                square.onclick = () => handleSquareClick(squareName);
+                boardEl.appendChild(square);
             }
+        }
+    }
 
-            if (obsPos > jumpArea.clientWidth + 30) {
-                clearInterval(moveObs);
-                obs.remove();
-                jumpScore++;
-                document.getElementById('jump-score').textContent = jumpScore;
-                if(jumpScore % 5 === 0) {
-                    jumpSpeed += 0.5;
-                    document.getElementById('jump-speed-lvl').textContent = (jumpSpeed - 4).toFixed(1);
+    async function handleSquareClick(pos) {
+        if (game.game_over()) return;
+
+        if (selectedSquare === pos) {
+            selectedSquare = null;
+            renderBoard();
+            return;
+        }
+
+        const move = game.move({ from: selectedSquare, to: pos, promotion: 'q' });
+
+        if (move) {
+            selectedSquare = null;
+            renderBoard();
+            updateStatus();
+            
+            if (game.game_over()) {
+                if (game.in_checkmate()) {
+                    const winner = game.turn() === 'w' ? "Black" : "White";
+                    alert(`CHECKMATE! ${winner} Wins!`);
+                    await addPoints(50);
+                } else {
+                    alert("DRAW / STALEMATE!");
+                    await addPoints(25);
                 }
             }
-        }, 20);
-
-        setTimeout(createObstacle, Math.random() * (2000 - jumpSpeed * 100) + 1000);
+        } else {
+            const piece = game.get(pos);
+            if (piece && piece.color === game.turn()) {
+                selectedSquare = pos;
+                renderBoard();
+            }
+        }
     }
 
-    function startJumpGame() {
-        if (jumpActive) return;
-        jumpActive = true; jumpScore = 0; jumpSpeed = 5;
-        document.getElementById('jump-score').textContent = "0";
-        document.getElementById('jump-speed-lvl').textContent = "1";
-        createObstacle();
+    function updateStatus() {
+        const turn = game.turn() === 'w' ? "WHITE" : "BLACK";
+        document.getElementById('chess-kibo-status').textContent = game.in_check() ? `${turn} IN CHECK!` : `${turn}'S TURN`;
     }
 
-    async function endJumpGame() {
-        jumpActive = false;
-        alert("GAME OVER! Final Score: " + jumpScore);
-        await addPoints(jumpScore);
-        // Clear obstacles
-        document.querySelectorAll('.obstacle').forEach(o => o.remove());
+    document.getElementById('chess-kibo-reset').onclick = initChess;
+
+    /* --- TIC TAC TOE --- */
+    let tttBoard = Array(9).fill(null);
+    let tttActive = true;
+    let tttPlayer = 'X';
+
+    function initTTT() {
+        const grid = document.getElementById('ttt-board');
+        grid.innerHTML = '';
+        tttBoard = Array(9).fill(null);
+        tttActive = true;
+        tttPlayer = 'X';
+        document.getElementById('ttt-status').textContent = "Turn: X";
+        for (let i = 0; i < 9; i++) {
+            const cell = document.createElement('div');
+            cell.className = 'ttt-cell';
+            cell.onclick = () => clickTTT(i, cell);
+            grid.appendChild(cell);
+        }
     }
 
-    function stopJumpGame() {
-        jumpActive = false;
-        document.querySelectorAll('.obstacle').forEach(o => o.remove());
+    async function clickTTT(i, cell) {
+        if (!tttActive || tttBoard[i]) return;
+        tttBoard[i] = tttPlayer;
+        cell.textContent = tttPlayer;
+        if (checkTTTWin()) {
+            document.getElementById('ttt-status').textContent = tttPlayer + " WINS!";
+            tttActive = false;
+            await addPoints(10);
+            return;
+        }
+        if (!tttBoard.includes(null)) {
+            document.getElementById('ttt-status').textContent = "DRAW!";
+            tttActive = false;
+            return;
+        }
+        tttPlayer = tttPlayer === 'X' ? 'O' : 'X';
+        document.getElementById('ttt-status').textContent = "Turn: " + tttPlayer;
     }
 
-    document.getElementById('jump-start').onclick = startJumpGame;
+    function checkTTTWin() {
+        const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+        return wins.some(comb => comb.every(idx => tttBoard[idx] === tttPlayer));
+    }
+
+    document.getElementById('reset-ttt').onclick = initTTT;
+    initTTT();
 
     /* --- MATCH-KIBO GAME --- */
     let matchIcons = ['🍎', '🍎', '⭐', '⭐', '🎮', '🎮', '🚀', '🚀', '🔥', '🔥', '💎', '💎', '👻', '👻', '🍀', '🍀', '🍄', '🍄', '🌍', '🌍'];
@@ -761,204 +801,93 @@
     const quizQuestions = [
       {q:"What is the capital city of Japan?", a:"Tokyo", choices:["Kyoto","Tokyo","Osaka","Hiroshima"]},
       {q:"Who painted the Mona Lisa?", a:"Leonardo da Vinci", choices:["Pablo Picasso","Leonardo da Vinci","Vincent van Gogh","Claude Monet"]},
-      {q:"What is the chemical symbol for water?", a:"H2O", choices:["CO2","H2O","O2","NaCl"]},
-      {q:"What is 12 × 12?", a:"144", choices:["144","124","132","154"]},
-      {q:"Which organ pumps blood through the body?", a:"Heart", choices:["Liver","Lung","Heart","Kidney"]},
-      {q:"What language is primarily spoken in Brazil?", a:"Portuguese", choices:["Spanish","Portuguese","French","English"]},
-      {q:"What gas do humans breathe out?", a:"Carbon dioxide", choices:["Oxygen","Nitrogen","Carbon dioxide","Helium"]},
-      {q:"What is the largest planet in our solar system?", a:"Jupiter", choices:["Mars","Earth","Saturn","Jupiter"]},
-      {q:"If x + 7 = 12, what is x?", a:"5", choices:["4","5","6","7"]},
-      {q:"What is the opposite of 'ancient'?", a:"Modern", choices:["Old","Recent","Modern","Historic"]},
-      {q:"Who wrote '1984'?", a:"George Orwell", choices:["Aldous Huxley","George Orwell","Ray Bradbury","J. K. Rowling"]},
-      {q:"What do bees produce?", a:"Honey", choices:["Milk","Honey","Wax","Silk"]},
-      {q:"What is 9 squared?", a:"81", choices:["72","81","90","99"]},
-      {q:"A polygon with 4 equal sides and angles is a?", a:"Square", choices:["Rectangle","Rhombus","Square","Trapezoid"]},
-      {q:"Which country gifted the Statue of Liberty to the USA?", a:"France", choices:["Spain","France","England","Italy"]},
-      {q:"What is the main gas in Earth's atmosphere?", a:"Nitrogen", choices:["Oxygen","Nitrogen","Carbon dioxide","Hydrogen"]},
-      {q:"What is the boiling point of water at sea level in °C?", a:"100", choices:["90","95","100","105"]},
-      {q:"What language's alphabet is Cyrillic?", a:"Russian", choices:["Japanese","Greek","Russian","Arabic"]},
-      {q:"Solve: 7 × 8", a:"56", choices:["54","56","58","60"]},
-      {q:"Synonym for 'happy'?", a:"Joyful", choices:["Sad","Angry","Joyful","Tired"]},
-      {q:"Who discovered penicillin?", a:"Alexander Fleming", choices:["Marie Curie","Alexander Fleming","Louis Pasteur","Gregor Mendel"]},
-      {q:"What is the freezing point of water in °C?", a:"0", choices:["-10","0","10","32"]},
-      {q:"What is the smallest prime number?", a:"2", choices:["1","2","3","5"]},
-      {q:"What is the plural of 'mouse'?", a:"Mice", choices:["Mouses","Mice","Mices","Mouse"]},
-      {q:"What is 15% of 200?", a:"30", choices:["20","25","30","35"]},
-      {q:"Which metal is liquid at room temperature?", a:"Mercury", choices:["Gold","Mercury","Iron","Aluminum"]},
-      {q:"What is the study of living organisms called?", a:"Biology", choices:["Chemistry","Geology","Biology","Physics"]},
-      {q:"What does DNA stand for?", a:"Deoxyribonucleic acid", choices:["Ribonucleic acid","Deoxyribonucleic acid","Deoxy acid","Nucleic acid"]},
-      {q:"What is the value of pi (approx to 2 decimals)?", a:"3.14", choices:["3.14","2.72","1.62","4.13"]},
-      {q:"What is the antonym of 'scarce'?", a:"Abundant", choices:["Rare","Abundant","Little","Empty"]},
-      {q:"Which planet has rings famously?", a:"Saturn", choices:["Mars","Venus","Saturn","Mercury"]},
-      {q:"What instrument measures temperature?", a:"Thermometer", choices:["Barometer","Thermometer","Hygrometer","Altimeter"]},
-      {q:"What is 1000 divided by 25?", a:"40", choices:["25","35","40","50"]},
-      {q:"What is the base unit of electricity?", a:"Ampere", choices:["Volt","Ohm","Ampere","Watt"]},
-      {q:"Which ocean is the largest?", a:"Pacific", choices:["Atlantic","Indian","Pacific","Arctic"]},
-      {q:"Complete the proverb: 'A picture is worth a ___ of words.'", a:"Thousand", choices:["Hundred","Million","Thousand","Dozen"]},
-      {q:"What kind of triangle has all equal sides?", a:"Equilateral", choices:["Isosceles","Scalene","Right","Equilateral"]},
-      {q:"Who is the author of 'Pride and Prejudice'?", a:"Jane Austen", choices:["Mary Shelley","Jane Austen","Charlotte Brontë","Emily Brontë"]},
-      {q:"What is the chemical symbol for gold?", a:"Au", choices:["Ag","Au","Gd","Ga"]},
-      {q:"What is 3/4 as a decimal?", a:"0.75", choices:["0.25","0.5","0.75","0.85"]},
-      {q:"Which organ is responsible for filtering blood?", a:"Kidney", choices:["Heart","Liver","Kidney","Spleen"]},
-      {q:"Which continent is Egypt in?", a:"Africa", choices:["Asia","Europe","Africa","South America"]},
-      {q:"What is the past tense of 'teach'?", a:"Taught", choices:["Teach","Taught","Teached","Teaching"]},
-      {q:"If a car travels 60 km in 1 hour, what's its speed in m/s? (approx)", a:"16.67", choices:["10","16.67","60","100"]},
-      {q:"What is an antonym for 'transparent'?", a:"Opaque", choices:["Clear","Translucent","Opaque","Thin"]},
-      {q:"Which scientist proposed the law of gravity?", a:"Isaac Newton", choices:["Albert Einstein","Isaac Newton","Galileo","Kepler"]},
-      {q:"What is the currency of Japan?", a:"Yen", choices:["Dollar","Euro","Yen","Won"]},
-      {q:"What literary device uses 'like' or 'as'?", a:"Simile", choices:["Metaphor","Alliteration","Simile","Personification"]},
-      {q:"What is 11 × 11?", a:"121", choices:["111","121","131","141"]},
-      {q:"What does 'CPU' stand for?", a:"Central Processing Unit", choices:["Central Processing Unit","Computer Power Unit","Control Processing Unit","Core Power Unit"]},
-      {q:"What is the rectangular prism volume formula?", a:"Length × Width × Height", choices:["L+W+H","L×W×H","2(L+W+H)","(L×W)/H"]},
+      {q:"What is the chemical symbol for water?", a:"H2O", choices:["CO2","H2O","O2","NaCl"]}
     ];
 
     let qIndex = 0, qCorrect = 0, qTime = 300, qStarted = false, qMode = 'type', qTimer;
 
-    document.getElementById('mode-type').onclick = () => { qMode = 'type'; document.getElementById('mode-type').classList.remove('ghost'); document.getElementById('mode-mc').classList.add('ghost'); if(qStarted) renderQ(); };
-    document.getElementById('mode-mc').onclick = () => { qMode = 'mc'; document.getElementById('mode-mc').classList.remove('ghost'); document.getElementById('mode-type').classList.add('ghost'); if(qStarted) renderQ(); };
-    document.getElementById('quiz-start').onclick = startQuiz;
-    document.getElementById('quiz-next').onclick = submitQ;
-    document.getElementById('quiz-skip').onclick = () => { qIndex++; if(qIndex >= quizQuestions.length) endQuiz(); else renderQ(); };
-
     function startQuiz() {
-        if(qStarted) return;
-        qStarted = true; qIndex = 0; qCorrect = 0; qTime = 300;
-        renderQ();
-        qTimer = setInterval(() => {
-            qTime--;
-            updateQTimer();
-            if(qTime <= 0) endQuiz();
-        }, 1000);
+      qStarted = true; qIndex = 0; qCorrect = 0; qTime = 300;
+      renderQ();
+      qTimer = setInterval(() => {
+        qTime--;
+        const m = Math.floor(qTime/60), s = qTime%60;
+        document.getElementById('quiz-timer').textContent = `${m}:${s<10?'0':''}${s}`;
+        if(qTime<=0) { clearInterval(qTimer); alert("Time's up!"); showScreen('menu'); }
+      }, 1000);
     }
 
     function renderQ() {
-        const q = quizQuestions[qIndex];
-        document.getElementById('quiz-question').textContent = `${qIndex+1}. ${q.q}`;
-        const container = document.getElementById('quiz-interaction');
-        if(qMode === 'type') {
-            container.innerHTML = `<input id="q-ans" class="answer-typed" type="text" placeholder="Your answer...">`;
-        } else {
-            const choices = [...q.choices].sort(() => Math.random() - 0.5);
-            container.innerHTML = `<div class="choices">${choices.map(c => `<button class="choice-btn" onclick="this.parentElement.querySelectorAll('button').forEach(b=>b.style.background='white');this.style.background='#d0f0d6';this.dataset.sel='1'">${c}</button>`).join('')}</div>`;
-        }
-        document.getElementById('quiz-score').textContent = `${qCorrect} / ${quizQuestions.length}`;
-    }
-
-    function submitQ() {
-        if(!qStarted) return;
-        const q = quizQuestions[qIndex];
-        let correct = false;
-        if(qMode === 'type') {
-            const val = document.getElementById('q-ans').value.trim().toLowerCase();
-            if(val === q.a.toLowerCase()) correct = true;
-        } else {
-            const sel = document.querySelector('.choice-btn[data-sel="1"]');
-            if(sel && sel.textContent.toLowerCase() === q.a.toLowerCase()) correct = true;
-        }
-        if(correct) qCorrect++;
-        qIndex++;
-        if(qIndex >= quizQuestions.length) endQuiz();
-        else renderQ();
-    }
-
-    function updateQTimer() {
-        const m = Math.floor(qTime/60).toString().padStart(2,'0');
-        const s = (qTime%60).toString().padStart(2,'0');
-        document.getElementById('quiz-timer').textContent = `${m}:${s}`;
-    }
-
-    async function endQuiz() {
-        clearInterval(qTimer);
-        qStarted = false;
-        document.getElementById('quiz-interaction').innerHTML = `<div class="center">DONE! Score: ${qCorrect}</div>`;
-        await addPoints(qCorrect);
-    }
-
-    /* --- TIC TAC TOE --- */
-    let tttState = ["","","","","","","","",""], tttChar = "X", tttActive = true;
-    const tttBoard = document.getElementById('ttt-board');
-    const tttStatus = document.getElementById('chess-status');
-
-    function renderTTT() {
-        tttBoard.innerHTML = '';
-        tttState.forEach((val, i) => {
-            const cell = document.createElement('div');
-            cell.className = 'ttt-cell';
-            cell.textContent = val;
-            cell.onclick = () => {
-                if(!tttActive || tttState[i]) return;
-                tttState[i] = tttChar;
-                checkTTT();
-                tttChar = tttChar === "X" ? "O" : "X";
-                renderTTT();
-            };
-            tttBoard.appendChild(cell);
+      const q = quizQuestions[qIndex];
+      document.getElementById('quiz-question').textContent = q.q;
+      const area = document.getElementById('quiz-interaction');
+      area.innerHTML = '';
+      if(qMode === 'type') {
+        const inp = document.createElement('input');
+        inp.type = 'text'; inp.className = 'answer-typed';
+        inp.onchange = () => { if(inp.value.toLowerCase() === q.a.toLowerCase()) { qCorrect++; updateQuizScore(); } nextQ(); };
+        area.appendChild(inp);
+      } else {
+        const box = document.createElement('div');
+        box.className = 'choices';
+        q.choices.forEach(c => {
+          const b = document.createElement('button');
+          b.className = 'choice-btn'; b.textContent = c;
+          b.onclick = () => { if(c === q.a) qCorrect++; updateQuizScore(); nextQ(); };
+          box.appendChild(b);
         });
-        if(tttActive) tttStatus.textContent = `Turn: ${tttChar}`;
+        area.appendChild(box);
+      }
     }
 
-    async function checkTTT() {
-        const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
-        for(let combo of wins) {
-            const [a,b,c] = combo;
-            if(tttState[a] && tttState[a] === tttState[b] && tttState[a] === tttState[c]) {
-                tttActive = false;
-                tttStatus.textContent = `Player ${tttState[a]} Wins! (+5 Points)`;
-                if(tttState[a] === "X") await addPoints(5); 
-                return;
-            }
-        }
-        if(!tttState.includes("")) { tttActive = false; tttStatus.textContent = "Draw!"; }
+    function updateQuizScore() { document.getElementById('quiz-score').textContent = `${qCorrect} / ${quizQuestions.length}`; }
+    function nextQ() { 
+        qIndex++; 
+        if(qIndex < quizQuestions.length) renderQ(); 
+        else { 
+            clearInterval(qTimer); 
+            addPoints(qCorrect * 5);
+            alert(`Quiz Done! Score: ${qCorrect}. Earned ${qCorrect*5} Stars.`); 
+            showScreen('menu'); 
+        } 
     }
 
-    document.getElementById('reset-chess').onclick = () => { tttState = ["","","","","","","","",""]; tttChar = "X"; tttActive = true; renderTTT(); };
-    renderTTT();
+    document.getElementById('quiz-start').onclick = startQuiz;
 
     /* --- BONE RUSH --- */
-    const boneWords = ["psychology","acknowledgement","metamorphosis","knowledge","neuroscience","encyclopedia","transformation","synchronization","architecture","bioluminescence","cryptography","photosynthesis","quantification","heterogeneous","interpretation","circumstantial","anthropology","plethora","juxtaposition","ubiquitous","lexicography","methodology","algorithm","polymorphism","concatenation","homeostasis","epistemology","polyhedron","isosceles","parallelogram","conscientious","benevolent","idiosyncratic","onomatopoeia","extraterrestrial","microorganism","electromagnetic","rendezvous","camouflage","meticulous","sagacious","omniscient","philanthropy","dichotomy","ameliorate","ubiquity","reminisce"];
-    let boneActive = false, boneScore = 0, boneTime = 300, boneTimer;
-    const boneWordDisp = document.getElementById('bone-word');
-    const boneInput = document.getElementById('bone-input');
-
+    const words = ["KIBO", "ARCADE", "CHESS", "CODING", "STARS", "BONE", "SMART", "ADVENTURE"];
+    let bScore = 0, bTime = 60, bActive = false, bTimer;
+    
     function startBone() {
-        if(boneActive) return;
-        boneActive = true; boneScore = 0; boneTime = 300;
-        boneInput.value = ''; boneInput.focus();
-        nextBone();
-        boneTimer = setInterval(() => {
-            boneTime--;
-            const m = Math.floor(boneTime/60).toString().padStart(2,'0');
-            const s = (boneTime%60).toString().padStart(2,'0');
-            document.getElementById('bone-timer').textContent = `${m}:${s}`;
-            if(boneTime <= 0) endBone();
-        }, 1000);
-    }
-
-    function nextBone() {
-        const w = boneWords[Math.floor(Math.random()*boneWords.length)];
-        boneWordDisp.textContent = w;
-    }
-
-    boneInput.oninput = () => {
-        if(!boneActive) return;
-        if(boneInput.value.trim().toLowerCase() === boneWordDisp.textContent.toLowerCase()) {
-            boneScore++;
-            document.getElementById('bone-score').textContent = boneScore;
-            boneInput.value = '';
-            nextBone();
+      bActive = true; bScore = 0; bTime = 60;
+      document.getElementById('bone-score').textContent = "0";
+      nextWord();
+      bTimer = setInterval(() => {
+        bTime--;
+        document.getElementById('bone-timer').textContent = bTime;
+        if(bTime <= 0) { 
+          clearInterval(bTimer); bActive = false; 
+          addPoints(bScore);
+          alert("Time's up! Earned " + bScore + " Stars."); 
         }
-    };
-
-    async function endBone() {
-        clearInterval(boneTimer);
-        boneActive = false;
-        boneWordDisp.textContent = "DONE!";
-        await addPoints(boneScore);
+      }, 1000);
     }
 
+    function nextWord() {
+      const w = words[Math.floor(Math.random()*words.length)];
+      document.getElementById('bone-word').textContent = w;
+      document.getElementById('bone-input').value = '';
+    }
+
+    document.getElementById('bone-input').oninput = (e) => {
+      if(!bActive) return;
+      if(e.target.value.toUpperCase() === document.getElementById('bone-word').textContent) {
+        bScore++; document.getElementById('bone-score').textContent = bScore;
+        nextWord();
+      }
+    };
     document.getElementById('bone-start').onclick = startBone;
 
-    // Initialize Auth
     initAuth();
   </script>
 </body>
